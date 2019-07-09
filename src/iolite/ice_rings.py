@@ -31,7 +31,7 @@ for n in range(number_of_images):
                 res_in.append([resolution,intensity])
 
 del res_in[0]               # remove default first line
-res_in.sort()               # hopefully this sorts it only based on the resolution values
+res_in.sort()               # hopefully this sorts it only based on the resolution values, it will probably sort from low to high values, should that be the case?
 
 # prepare the data for plotting
 resolution_data = []
@@ -39,10 +39,12 @@ mean_int =[]
 
 for i in res_in:
     resolution_data.append(res_in[i][0])
-    mean_int.append((sum(res_in[i][1:]))/(len(res_in[i])-1))        
+    mean_int.append((sum(res_in[i][1:]))/(len(res_in[i])-1))        #calculate the mean intensity for every single resolution
 
 plt.plot(resolution_data,mean_int)
+plt.xlim(max(resolution_data), min(resolution_data))                 #invert the x axis
 plt.ylabel('mean intensity')
 plt.xlabel('resolution')
-plt.title('mean intensity against resolution')
+plt.title('Mean intensity against resolution')
 plt.show()
+
