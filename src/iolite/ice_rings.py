@@ -48,3 +48,12 @@ plt.xlabel('resolution')
 plt.title('Mean intensity against resolution')
 plt.show()
 
+"""
+the ice-rings have to be detected by the program
+--> get intensity at the common ice-ring resolutions (3.65 A, 2.25 A and 1.92 A) and calculate the difference in intensity 
+compared to a 'slightly' (needs to be defined) lower or higher resolution
+classify this difference as either detection of an ice-ring or not
+one could also compare the absolute values of the derivatives (should be a significantly higher value at the ice-ring?)
+
+
+"""
