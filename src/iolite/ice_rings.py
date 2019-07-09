@@ -22,11 +22,21 @@ for n in range(number_of_images):
             intensity = 0       #some function to determine the intensity of the pixel 
         
             is_in_array = False
-            
+
             for i in res_in:
                 if intensity == res_in[i][0]:
                     res_in[i].append(intensity)  
                     is_in_array = True
             if is_in_array == False:
                 res_in.append([resolution,intensity])
+
+del res_in[0]               # remove default first line
+
+# prepare the data for plotting
+resolution_data = []
+mean_int =[]
+
+for i in res_in:
+    resolution_data.append(res_in[i][0])
+    mean_int.append((sum(res_in[i][1:]))/(len(res_in[i])-1))        
 
