@@ -9,26 +9,44 @@ beam = experiments[0].beam
 detector = experiments[0].detector
 imageset = experiments[0].imageset
 
+#help(imageset)
+
+#print(dir(imageset))
 
 panel = detector[0]
 
 res_in = [[0]]                   #create array to store the resolution and intensity values
 
-for n in range(number_of_images):
-    for x in range(image_width):       #going through all the pixels
-        for y in range(image_length):
-            resolution = panel.get_resolution_at_pixel(beam.get_s0(), (x,y))
-            #print("Resolution at pixel (0,0) = %f" % resolution)
-            intensity = 0       #some function to determine the intensity of the pixel 
+#image=imageset.get_raw_data(0)[0]
+#pixel=image[0,0]
+#print(pixel)
+#help(image)
+#print(len(imageset))
+
+
+for n in range(1):    # len(imageset)
+    image = imageset.get_raw_data(n)[0]         
+  #  print(image.all()[0], image.all()[1])
+
+    for y in range(image.all()[0]):       #going through all the pixels
+        for x in range(image.all()[1]):
+            pixel = image[y,x]
+            
+            resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),3)
+            
+            intensity = pixel 
+            print(resolution , pixel)      
         
             is_in_array = False
 
-            for i in res_in:
-                if intensity == res_in[i][0]:
-                    res_in[i].append(intensity)  
+            for i in range(len(res_in)):
+                if resolution == res_in[i][0]:
+                    res_in[i].append(pixel)  
                     is_in_array = True
             if is_in_array == False:
-                res_in.append([resolution,intensity])
+                res_in.append([resolution,pixel]) 
+                
+#help(pixel)
 
 del res_in[0]               # remove first line
 res_in.sort()               # hopefully this sorts it only based on the resolution values, it will probably sort from low to high values, should that be the case?
@@ -37,7 +55,7 @@ res_in.sort()               # hopefully this sorts it only based on the resoluti
 resolution_data = []
 mean_int =[]
 
-for i in res_in:
+for i in range(len(res_in)):
     resolution_data.append(res_in[i][0])
     mean_int.append((sum(res_in[i][1:]))/(len(res_in[i])-1))        #calculate the mean intensity for every single resolution
 
