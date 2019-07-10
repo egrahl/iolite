@@ -12,7 +12,7 @@ imageset = experiments[0].imageset
 
 panel = detector[0]
 
-res_in = [[0]]                   #create default array to store the resolution and intensity values
+res_in = [[0]]                   #create array to store the resolution and intensity values
 
 for n in range(number_of_images):
     for x in range(image_width):       #going through all the pixels
@@ -30,7 +30,7 @@ for n in range(number_of_images):
             if is_in_array == False:
                 res_in.append([resolution,intensity])
 
-del res_in[0]               # remove default first line
+del res_in[0]               # remove first line
 res_in.sort()               # hopefully this sorts it only based on the resolution values, it will probably sort from low to high values, should that be the case?
 
 # prepare the data for plotting
