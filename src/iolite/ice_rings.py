@@ -1,6 +1,8 @@
 from dxtbx.model.experiment_list import ExperimentListFactory
 import matplotlib.pyplot as plt
+from timeit import default_timer as timer
 
+start=timer()
 
 experiments = ExperimentListFactory.from_json_file("datablock.json")
 assert len(experiments) == 1
@@ -60,10 +62,11 @@ for i in range(len(res_in)):
     mean_int.append((sum(res_in[i][1:]))/(len(res_in[i])-1))        #calculate the mean intensity for every single resolution
 
 plt.plot(resolution_data,mean_int)
-plt.xlim(max(resolution_data), min(resolution_data))                 #invert the x axis
+plt.xlim(4.0, 1.3)                 #invert the x axis
+plt.ylim(0,800)
 plt.ylabel('mean intensity')
 plt.xlabel('resolution')
-plt.title('Mean intensity against resolution')
+plt.title('Mean intensity vs resolution')
 plt.show()
 
 """
@@ -75,3 +78,6 @@ one could also compare the absolute values of the derivatives (should be a signi
 
 
 """
+
+end=timer()
+print(end-start)
