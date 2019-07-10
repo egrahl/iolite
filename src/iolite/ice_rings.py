@@ -38,8 +38,8 @@ for n in range(1):    # len(imageset)
         for x in range(image.all()[1]):
             pixel = image[y,x]
             
-            resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),3)
-            
+            #resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),3)
+            resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),2)
             
            # print(resolution , pixel)   
             try:
