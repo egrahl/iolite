@@ -5,8 +5,6 @@ from timeit import default_timer as timer
 start=timer()
 
 
-
-
 experiments = ExperimentListFactory.from_json_file("datablock.json")
 assert len(experiments) == 1
 
@@ -30,24 +28,24 @@ intensity_data =[[0]]
 #print(len(imageset))
 
 
-for n in range(1):    # len(imageset)
+for n in range(1):   # len(imageset) 
     image = imageset.get_raw_data(n)[0]         
   #  print(image.all()[0], image.all()[1])
 
     for y in range(image.all()[0]):       #going through all the pixels
         for x in range(image.all()[1]):
-            pixel = image[y,x]
-            
+           
             #resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),3)
             resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),2)
-            
-           # print(resolution , pixel)   
-            try:
-                index= resolution_data.index(resolution)
-                intensity_data[index].append(pixel)
-            except ValueError:
-                resolution_data.append(resolution)
-                intensity_data.append([pixel])   
+            if resolution <= 4.00:
+                pixel = image[y,x]
+                # print(resolution , pixel)   
+                try:
+                    index= resolution_data.index(resolution)
+                    intensity_data[index].append(pixel)
+                except ValueError:
+                    resolution_data.append(resolution)
+                    intensity_data.append([pixel])   
       
 #help(pixel)
 
@@ -69,7 +67,7 @@ print('time used:', end-start)
 
 plt.plot(resolution_data,mean_int)
 plt.xlim(4.0, 1.3)                 #invert the x axis
-plt.ylim(0, 800)
+#plt.ylim(0, 800)
 plt.ylabel('Mean Intensity')
 plt.xlabel('Resolution (A)')
 plt.title('Mean intensity vs resolution')
