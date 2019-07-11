@@ -1,5 +1,6 @@
 from dxtbx.model.experiment_list import ExperimentListFactory
 import matplotlib.pyplot as plt
+import numpy as np
 from timeit import default_timer as timer
 
 start=timer()
@@ -63,7 +64,11 @@ for i in range(len(resolution_data)):
 end=timer()
 print('time used:', end-start)
 
+resolution_data= np.array(resolution_data)
+mean_int = np.array(mean_int)
 
+resMInt = np.stack((resolution_data,mean_int), axis =-1)
+print(resMInt)
 
 plt.plot(resolution_data,mean_int)
 plt.xlim(4.0, 1.3)                 #invert the x axis
