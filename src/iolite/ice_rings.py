@@ -4,6 +4,13 @@ import numpy as np
 from timeit import default_timer as timer
 
 
+
+
+
+
+
+
+"""
 def calculateRatio (res,intensity,startRes,endRes, boundary):
     indexstart =res.index(startRes)
     indexend = res.index(endRes)
@@ -22,20 +29,56 @@ beam = experiments[0].beam
 detector = experiments[0].detector
 imageset = experiments[0].imageset
 
-#help(imageset)
-
-#print(dir(imageset))
 
 panel = detector[0]
+
+
+
+
+xy_data = []
+res_index_l = []
+resolution_data = []
+
+image1 = imageset.get_raw_data(0)[0]
+
+for y in range(image1.all()[0]):       #going through all the pixels
+        for x in range(image1.all()[1]):
+            xy_data.append([x,y])
+            resolution = round(panel.get_resolution_at_pixel(beam.get_s0(), (x,y)),2)
+           
+            try:
+                index= resolution_data.index(resolution)
+            except ValueError:
+                resolution_data.append(resolution)
+                index= resolution_data.index(resolution) 
+            
+            res_index_l.append(index)
+
+
+end=timer()
+print(xy_data)
+print('time taken:', (end-start))
+
+intensity_data = [[None]]*len(resolution_data)
+
+
+for n in range(1):   # len(imageset) 
+    image = imageset.get_raw_data(n)[0]         
+    for i in range(100):           #len(xy_data)
+        pixel = image[xy_data[i][1],xy_data[i][0]]
+        print(pixel)
+        res_index = res_index_l[i]
+        print(res_index)
+        #if intensity_data[res_index]==None:
+        #    intensity_data[res_index] =[pixel]
+        #else:    
+            #intensity_data[res_index].append(pixel)   
+      
+#print(intensity_data)
 
 resolution_data = [0]                   #create a list for resolution data
 intensity_data =[[0]]
 
-#image=imageset.get_raw_data(0)[0]
-#pixel=image[0,0]
-#print(pixel)
-#help(image)
-#print(len(imageset))
 
 
 for n in range(1):   # len(imageset) 
@@ -57,7 +100,7 @@ for n in range(1):   # len(imageset)
                     resolution_data.append(resolution)
                     intensity_data.append([pixel])   
       
-#help(pixel)
+
 
 del resolution_data[0]               # remove first line in resolution_data
 del intensity_data[0]
@@ -79,15 +122,6 @@ for i in range(len(resolution_data)):
 
 
 
-"""
-the ice-rings have to be detected by the program
---> get intensity at the common ice-ring resolutions (3.67 A, 2.25 A and 1.92 A) and calculate the difference in intensity 
-compared to a 'slightly' (needs to be defined) lower or higher resolution
-classify this difference as either detection of an ice-ring or not
-one could also compare the absolute values of the derivatives (should be a significantly higher value at the ice-ring?)
-
-
-"""
 # calculate the intensity ratios
 
 ratio1 = calculateRatio(resolution_data, mean_int,3.65,3.69,3.90)
@@ -102,11 +136,11 @@ print(sumratios)
 
 end=timer()
 print('time used:', end-start)
-
+"""
 
 #plot data
 plt.plot(resolution_data,mean_int)
-plt.xlim(4.0, 1.3)                 #invert the x axis
+plt.xlim(max(resolution_data),min(resolution_data) )                 #invert the x axis
 plt.ylabel('Mean Intensity')
 plt.xlabel('Resolution (A)')
 plt.title('Mean intensity vs resolution')
