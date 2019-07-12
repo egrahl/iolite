@@ -8,8 +8,8 @@ def calculateRatio (res,intensity,startRes,endRes, boundary):
     indexstart =res.index(startRes)
     indexend = res.index(endRes)
     indexboundary = res.index(boundary)
-    intensity_peak = (sum(intensity,indexstart)-sum(intensity,indexend+1))/(indexend-indexstart)
-    intensity_bg = (sum(intensity,indexend)-sum(intensity,indexboundary+1))/(indexboundary-indexend)
+    intensity_peak = sum(intensity[indexstart:(indexend+1)])/(indexend-indexstart+1)
+    intensity_bg = sum(intensity[indexend:(indexboundary+1)])/(indexboundary-indexend+1)
     return (intensity_peak/intensity_bg)
 
 start=timer()
@@ -70,8 +70,6 @@ mean_int =[]
 for i in range(len(resolution_data)):
     mean_int.append((sum(intensity_data[i]))/(len(intensity_data[i])))       #calculate the mean intensity for every single resolution
 
-end=timer()
-print('time used:', end-start)
 
 #resolution_data= np.array(resolution_data)
 #mean_int = np.array(mean_int)
@@ -79,13 +77,7 @@ print('time used:', end-start)
 #resMInt = np.stack((resolution_data,mean_int), axis =-1)
 #print(resMInt)
 
-plt.plot(resolution_data,mean_int)
-plt.xlim(4.0, 1.3)                 #invert the x axis
-#plt.ylim(0, 800)
-plt.ylabel('Mean Intensity')
-plt.xlabel('Resolution (A)')
-plt.title('Mean intensity vs resolution')
-plt.show()
+
 
 """
 the ice-rings have to be detected by the program
@@ -96,7 +88,7 @@ one could also compare the absolute values of the derivatives (should be a signi
 
 
 """
-# calculate the intensity ratios; SOMETHING IS WRONG HERE!!!
+# calculate the intensity ratios
 
 ratio1 = calculateRatio(resolution_data, mean_int,3.65,3.69,3.90)
 ratio2 = calculateRatio(resolution_data, mean_int,2.24,2.25,2.45)
@@ -106,3 +98,16 @@ print(ratio1, ratio2, ratio3)
 
 sumratios = ratio1 + ratio2 + ratio3
 print(sumratios)
+
+
+end=timer()
+print('time used:', end-start)
+
+
+#plot data
+plt.plot(resolution_data,mean_int)
+plt.xlim(4.0, 1.3)                 #invert the x axis
+plt.ylabel('Mean Intensity')
+plt.xlabel('Resolution (A)')
+plt.title('Mean intensity vs resolution')
+plt.show()
