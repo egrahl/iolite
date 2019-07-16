@@ -29,7 +29,7 @@ intensity_data_minmax = min_max_scaler.fit_transform(intensity_data_reshape)
 intensity_data_1D =  intensity_data_minmax.flatten()
 
 
-peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D,height= 10, prominence=0.4, width=5)
+peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D,height= 5, prominence=0.4, width=5)
  
 resolution_peaks = []
 
