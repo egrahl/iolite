@@ -27,7 +27,7 @@ def additional_peaks(intensity_data,resolution_data,min,max):
     for n in range(len(resolution_sub_index)):
         intensity_data_sub.append(intensity_data[resolution_sub_index[n]])
 
-    index_list, _ =scipy.signal.find_peaks(intensity_data_sub)
+    index_list, _ =scipy.signal.find_peaks(intensity_data_sub, prominence=0.1)
 
     
     
@@ -67,7 +67,7 @@ resolution_peaks = resolution_peak_list(peaks)
 print('Resolutions at the peaks:' ,resolution_peaks)
 #print(peak_dictionary)
 
-peaks2 =additional_peaks(intensity_data_1D, resolution_data,0.25,0.28)
+peaks2 =additional_peaks(intensity_data_1D, resolution_data,0.2625,0.285)
 resolution_peaks2 = resolution_peak_list(peaks2)
 
 print('The additional peaks:' , resolution_peaks2)
