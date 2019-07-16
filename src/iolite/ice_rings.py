@@ -20,7 +20,7 @@ for line in filein.readlines():
     resolution_data.append(float(tokens[0]))
     intensity_data.append(float(tokens[1].rstrip()))
 
-resolution_data_np = np.array(resolution_data)
+#resolution_data_np = np.array(resolution_data)
 intensity_data_np = np.array(intensity_data)
 intensity_data_reshape = np.reshape(intensity_data_np,(-1,1))
 
@@ -29,14 +29,50 @@ intensity_data_minmax = min_max_scaler.fit_transform(intensity_data_reshape)
 intensity_data_1D =  intensity_data_minmax.flatten()
 
 
-peaks, _ = scipy.signal.find_peaks(intensity_data_1D,height= 10, prominence=0.8, width=5)
-#print(peaks) 
+peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D,height= 10, prominence=0.4, width=5)
+ 
 resolution_peaks = []
 
 for i in range(len(peaks)):
     resolution_peaks.append(resolution_data[peaks[i]])
 
 print(resolution_peaks)
+#print(peak_dictionary)
+
+#print(resolution_data)
+
+#detect ice-rings
+
+count = 0
+
+
+for i in range(len(resolution_peaks)):
+    if resolution_peaks[i]>0.073 and resolution_peaks[i]<0.0745:
+        count +=1
+    if resolution_peaks[i]>0.190 and resolution_peaks[i]<0.199:
+        count +=1
+    if resolution_peaks[i]>0.269 and resolution_peaks[i]<0.273:
+        count +=1
+
+
+if resolution_data[-1]< 0.27:
+#first case: resolution data does not include the resolution around 0.272
+    if count ==2:
+        print("The data set contains ice-rings.")
+
+    else:
+        print("The data set does not contain ice-rings.")
+
+else: 
+    #resolution data includes resolution around 0.272
+    if count ==3:
+        print("The data set contains ice-rings.")
+    else:
+        print("The data set does not contain ice-rings.")
+
+
+
+
 
 
 #plot data
@@ -47,5 +83,3 @@ plt.xlabel('Resolution')
 plt.title('Mean intensity vs resolution')
 plt.savefig('plot')
 plt.show()
-
-
