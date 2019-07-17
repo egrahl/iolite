@@ -73,7 +73,7 @@ def main():
     intensity_data_1D =  intensity_data_minmax.flatten()
 
     #peak detection
-    peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D,height= 5, prominence=0.4, width=7)
+    peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D, prominence=0.4, width=7)
     
     resolution_peaks = resolution_peak_list(peaks,resolution_data)
 
@@ -129,7 +129,7 @@ def main():
 
     print('Time taken:', end-start)
 
-    """
+
 
     #plot data
 
@@ -139,6 +139,6 @@ def main():
     plt.title('Mean intensity vs resolution')
     plt.savefig('plot')
     plt.show()
-    """
+  
 
 main()
