@@ -45,7 +45,7 @@ if __name__ == "__main__":
     
     summed_data = None
     summed_mask = None
-    summed_mask_list = []   #only there to see different masks right now
+   
 
     # Read image
     for n in range(len(imageset)):   
@@ -56,10 +56,11 @@ if __name__ == "__main__":
         assert isinstance(data, tuple)
         assert isinstance(mask, tuple)
 
+        #create strong spot mask for image
         for sbox in image_shoebox_l[n]:
                 
                 x0, x1, y0, y1, z0, z1 = sbox.bbox
-                mask_sp = sbox.mask # 3D array where 0 is background and 1 | 4 = 5 is foreground
+                mask_sp = sbox.mask 
                 mask_np = mask_sp.as_numpy_array()
                 mask_np_slice = mask_np[n-z0]
                 true_pixels = (mask_np_slice == 5)
@@ -68,26 +69,47 @@ if __name__ == "__main__":
         mask_array = ~mask_array
         mask_array_flex=flex.bool(mask_array)
         mask_strong_spots=(mask_array_flex,)
+        mask_strong_spots_np = mask_strong_spots[0].as_numpy_array()
         
-        if summed_data is None:
-            summed_mask = [mss & m for mss, m in zip(mask_strong_spots, mask)]
-            summed_data = data
-        else:
-            summed_data = [sd + d for sd, d in zip(summed_data, data)]
-            summed_mask = [sm & mss & m for sm, mss, m in zip(summed_mask,mask_strong_spots, mask)] 
+        mask_np = mask[0].as_numpy_array()
+        
+        mask_combined_np = np.logical_and(mask_np,mask_array)
+        mask_combined = (flex.int(mask_combined_np),)
+        mask_combined_int_np = mask_combined[0].as_numpy_array()
 
-        summed_mask_list.append(summed_mask)
+        temp = data[0] * mask_combined[0]
+
+        if summed_data is None:
+            summed_data = temp
+            summed_mask = mask_combined
+        else:
+            summed_data += temp
+            summed_mask += mask_combined
         
-    summed_mask_np = summed_mask_list[79][0].as_numpy_array()
+        from matplotlib import pylab
+        pylab.imshow(mask_combined_np)
+        pylab.show()
+   
+    summed_mask_np = summed_mask.as_numpy_array()
+    """
+    if np.any(summed_mask_np):
+        average = summed_data / summed_mask
+    else:
+        average = summed_data/len(imageset)
+    """
+    #average_np = average.as_numpy_array()
+    summed_data_np = summed_data.as_numpy_array()
+    mask_strong_spots_np = mask_strong_spots[0].as_numpy_array()
+    temp_np = temp.as_numpy_array()
+
+    
     end = timer()
     print('Time taken:', end-start)
-
-
-
+    """
     #show example mask
     from matplotlib import pylab
-    pylab.imshow(summed_mask_np)
+    pylab.imshow(temp_np)
     pylab.show()
-    
+    """
     
 
