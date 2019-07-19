@@ -14,7 +14,7 @@ def init_list_of_objects(size):
 
 if __name__ == "__main__":
     start = timer()
-    experiments = ExperimentListFactory.from_json_file("datablock.json")
+    experiments = ExperimentListFactory.from_json_file("imported.expt")
     assert len(experiments) == 1
 
     beam = experiments[0].beam
@@ -22,7 +22,7 @@ if __name__ == "__main__":
     imageset = experiments[0].imageset
     panel = detector[0]
   
-    reflections = flex.reflection_table.from_pickle("strong.pickle")
+    reflections = flex.reflection_table.from_pickle("strong.refl")
     
 
     shoebox = reflections['shoebox']
@@ -45,39 +45,25 @@ if __name__ == "__main__":
     
     summed_data = None
     summed_mask = None
-   
 
     # Read image
     for n in range(len(imageset)):   
         mask_array = np.zeros((y_dim,x_dim), dtype=bool) 
-        data = imageset.get_raw_data(i)
-        mask = imageset.get_mask(i)
-
-        assert isinstance(data, tuple)
-        assert isinstance(mask, tuple)
+        data = tuple(i.as_numpy_array() for i in imageset.get_raw_data(n))[0]
+        mask = tuple(m.as_numpy_array() for m in imageset.get_mask(n))[0]
 
         #create strong spot mask for image
         for sbox in image_shoebox_l[n]:
                 
                 x0, x1, y0, y1, z0, z1 = sbox.bbox
-                mask_sp = sbox.mask 
-                mask_np = mask_sp.as_numpy_array()
-                mask_np_slice = mask_np[n-z0]
-                true_pixels = (mask_np_slice == 5)
+                mask_sp = sbox.mask.as_numpy_array()
+                mask_sp_slice = mask_sp[n-z0,:,:]
+                true_pixels = (mask_sp_slice == 5)
                 mask_array[y0:y1,x0:x1] = np.logical_or(mask_array[y0:y1,x0:x1], true_pixels)
 
         mask_array = ~mask_array
-        mask_array_flex=flex.bool(mask_array)
-        mask_strong_spots=(mask_array_flex,)
-        mask_strong_spots_np = mask_strong_spots[0].as_numpy_array()
-        
-        mask_np = mask[0].as_numpy_array()
-        
-        mask_combined_np = np.logical_and(mask_np,mask_array)
-        mask_combined = (flex.int(mask_combined_np),)
-        mask_combined_int_np = mask_combined[0].as_numpy_array()
-
-        temp = data[0] * mask_combined[0]
+        mask_combined = np.logical_and(mask,mask_array).astype(np.int)
+        temp = data * mask_combined
 
         if summed_data is None:
             summed_data = temp
@@ -86,21 +72,15 @@ if __name__ == "__main__":
             summed_data += temp
             summed_mask += mask_combined
         
-        from matplotlib import pylab
-        pylab.imshow(mask_combined_np)
-        pylab.show()
    
-    summed_mask_np = summed_mask.as_numpy_array()
-    """
-    if np.any(summed_mask_np):
-        average = summed_data / summed_mask
-    else:
-        average = summed_data/len(imageset)
-    """
-    #average_np = average.as_numpy_array()
-    summed_data_np = summed_data.as_numpy_array()
-    mask_strong_spots_np = mask_strong_spots[0].as_numpy_array()
-    temp_np = temp.as_numpy_array()
+    index = np.where(summed_mask > 0)
+    summed_data[index] = summed_data[index] / summed_mask[index]
+
+    average = summed_data
+    final_mask = summed_mask > 0
+    # from matplotlib import pylab
+    # pylab.imshow(summed_data, vmax=100)
+    # pylab.show()
 
     
     end = timer()
