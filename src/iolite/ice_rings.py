@@ -7,138 +7,132 @@ import scipy.signal
 from scipy.signal import find_peaks
 from sklearn import preprocessing
 
-def resolution_peak_list (peaks,resolution_data):
-    resolution_peaks = []
+class IceRingClassifier:
+'''This class takes resolution and intensity data from a .txt file and classifies the dataset wether it does contain ice-rings or not. 
 
-    for i in range(len(peaks)):
-        resolution_peaks.append(resolution_data[peaks[i]])
-    return resolution_peaks
-
-
-
-def additional_peaks(intensity_data,resolution_data,min,max):
-    resolution_sub_index =[]
-    for i in range(len(resolution_data)):
-        if min<resolution_data[i] and max>resolution_data[i]:
-            resolution_sub_index.append(i)
+'''
+    def __init__(self, 
+                min_1st_ir=0.073,max_1st_ir=0.0755,
+                min_2nd_ir=0.1990,max_2nd_ir=0.200,
+                min_3rd_ir=0.269,max_3rd_ir=0.2745, 
+                filename="table.txt",showPlot=False):
+    '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, the filename to open and 
+    the setting not to show a plot.
+    '''
+        pass
+    
+    def resolution_intensity_from_txt(filename):
+        '''Create a list of resolution data and intensity data from .txt file, respectively.
         
+        :param str filename: name of txt file the resolution and intensity data lists are created from
+        :returns: list of resolution data and list of intensity data
+        '''
+        filein=open(filename,"r")
 
-    intensity_data_sub = []
-    for n in range(len(resolution_sub_index)):
-        intensity_data_sub.append(intensity_data[resolution_sub_index[n]])
+        resolution_data = []
+        intensity_data = []
 
-    index_list, _ =scipy.signal.find_peaks(intensity_data_sub, prominence=0.1)
+        for line in filein.readlines():
+            tokens = line.split(",")
+            resolution_data.append(float(tokens[0]))
+            intensity_data.append(float(tokens[1].rstrip()))
+        filein.close()
+        return resolution_data, intensity_data
 
-    peaks=[]
-    for k in range(len(index_list)):
-        peaks.append(index_list[k]+resolution_sub_index[0])
+    def scale_intensity(raw_intensity,min,max):
+        ''' Scales the intensity data to the range between min and max.
+        
+        :param list raw_intensity: list of intensity data that will be scaled
+        :param int min: minimum value of the scaled intensity data
+        :param int max: maximum value of the scaled intensity data
+        :returns: a 1D numpy array containing the scaled intensity data 
+        '''
+        #reshape array to make it compatible for scaling
+        intensity_data_reshape = np.reshape(np.array(raw_intensity),(-1,1))
 
-    return peaks
+        min_max_scaler = preprocessing.MinMaxScaler(feature_range=(min, max))
+        intensity_data_scaled = min_max_scaler.fit_transform(intensity_data_reshape)
 
-def gradient_peak(intensity_data,resolution_data,min,middle,max):
+        #transform scaled data back into a 1D array
+        intensity_data_1D =  intensity_data_scaled.flatten()
+
+        return intensity_data_1D
+
+    def resolution_peak_list (peaks,resolution_data):
+        ''' Writes a list of the corresponding resolutions to the found peaks.
+        
+        :param list peaks: list of indices of the peaks found in the intensity data
+        :param list resolution_data: list of resolution data 
+        :returns: list of the resolution values corresponding to the peaks
+        '''
+        resolution_peaks = []
+
+        for i in range(len(peaks)):
+            resolution_peaks.append(resolution_data[peaks[i]])
+        return resolution_peaks
+
+
+
+    def run():
+
+        start = timer()
+
+        #prepare data
+        resolution_data, intensity_data = resolution_intensity_from_txt("table.txt")
     
-    index_min = resolution_data.index(list(filter(lambda i: i > min, resolution_data))[0]) 
-    index_middle = resolution_data.index(list(filter(lambda i: i > middle, resolution_data))[0]) 
-    index_max = resolution_data.index(list(filter(lambda i: i > max, resolution_data))[0])
 
-    pos_gradient = intensity_data[index_middle]-intensity_data[index_min]
-    neg_gradient = intensity_data[index_max]-intensity_data[index_middle]
+        # scale intensity data to 100
+        intensity_scaled = scale_intensity(intensity_data,0,100)
 
-    return pos_gradient , neg_gradient
-
+        #peak detection
+        peaks, _ = scipy.signal.find_peaks(intensity_scaled, prominence=0.4, width=7)
+        resolution_peaks = resolution_peak_list(peaks,resolution_data)
 
 
-def main():
+        #detect ice-rings
 
-    start = timer()
-
-    #prepare data
-
-    filein=open("table.txt","r")
-
-    resolution_data = []
-    intensity_data = []
-
-    for line in filein.readlines():
-        tokens = line.split(",")
-        resolution_data.append(float(tokens[0]))
-        intensity_data.append(float(tokens[1].rstrip()))
-
-    # scale intensity data to 100
-    intensity_data_np = np.array(intensity_data)
-    intensity_data_reshape = np.reshape(intensity_data_np,(-1,1))
-
-    min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0, 100))
-    intensity_data_minmax = min_max_scaler.fit_transform(intensity_data_reshape)
-    intensity_data_1D =  intensity_data_minmax.flatten()
-
-    #peak detection
-    peaks, peak_dictionary = scipy.signal.find_peaks(intensity_data_1D, prominence=0.4, width=7)
-    
-    resolution_peaks = resolution_peak_list(peaks,resolution_data)
-
-    #print('Resolutions at the peaks:' ,resolution_peaks)
+        count = [0]*3
 
 
-    #detect ice-rings
-
-    count = [0]*3
-
-
-    for i in range(len(resolution_peaks)):
-        if resolution_peaks[i]>0.073 and resolution_peaks[i]<0.0755:
-            count[0] = 1
-        if resolution_peaks[i]>0.190 and resolution_peaks[i]<0.200:
-            count[1] = 1
-        if resolution_peaks[i]>0.269 and resolution_peaks[i]<0.2745:
-            count[2] = 1
+        for i in range(len(resolution_peaks)):
+            if resolution_peaks[i]>0.073 and resolution_peaks[i]<0.0755:
+                count[0] = 1
+            if resolution_peaks[i]>0.190 and resolution_peaks[i]<0.200:
+                count[1] = 1
+            if resolution_peaks[i]>0.269 and resolution_peaks[i]<0.2745:
+                count[2] = 1
 
 
-    if resolution_data[-1]< 0.27:
-    #first case: resolution data does not include the resolution around 0.272
-        if sum(count) ==2:
-            print("The data set contains ice-rings.")
-
-        else:
-            print("The data set does not contain ice-rings.")
-
-    else: 
-        #resolution data includes resolution around 0.272
-        if sum(count) == 3:
-            print("The data set contains ice-rings.")
-
-        elif sum(count) ==2:
-            if count[0] == 0:
-                pos_gradient, neg_gradient = gradient_peak(intensity_data_1D,resolution_data, 0.065,0.074,0.083)
-
-            if count[1] == 0:
-                pos_gradient, neg_gradient = gradient_peak(intensity_data_1D,resolution_data, 0.190,0.198,0.206)
-
-            if count[2] == 0:
-                pos_gradient, neg_gradient = gradient_peak(intensity_data_1D,resolution_data, 0.260,0.272,0.280)
-
-            if pos_gradient>0.1 and neg_gradient<0:
+        if resolution_data[-1]< 0.27:
+        #first case: resolution data does not include the resolution greater 0.27
+            if sum(count) ==2:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
-        else:
-            print("The data set does not contain ice-rings.")
+
+        else: 
+            #resolution data includes resolution greater than 0.27
+            if sum(count) == 3:
+                print("The data set contains ice-rings.") 
+            else:
+                print("The data set does not contain ice-rings.")
 
 
-    end =timer()
+        end =timer()
 
-    print('Time taken:', end-start)
+        print('Time taken:', end-start)
 
 
+        """
+        #plot data
 
-    #plot data
+        plt.plot(resolution_data, intensity_scaled)
+        plt.ylabel('Mean Intensity (Standardised)')
+        plt.xlabel('Resolution')
+        plt.title('Mean intensity vs resolution')
+        plt.savefig('plot')
+        plt.show()
+        """
 
-    plt.plot(resolution_data, intensity_data_1D)
-    plt.ylabel('Mean Intensity (Standardised)')
-    plt.xlabel('Resolution')
-    plt.title('Mean intensity vs resolution')
-    plt.savefig('plot')
-    plt.show()
-  
+    main()
 
-main()
