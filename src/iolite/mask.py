@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 
 help_message = """
 
-This program averages images and makes a radial average over resolution shells
+This program masks the strong spots of an image, followed by averaging of the images and making a radial average over resolution shells
 
 Examples::
 
@@ -100,9 +100,11 @@ class Script(object):
         # Set the scan range
         if params.scan_range is None:
             scan_range = (0, len(imageset))
+           
         else:
             scan_range = params.scan_range
             i0, i1 = scan_range
+           
             if i0 < 0 or i1 > len(imageset):
                 raise RuntimeError("Scan range outside image range")
             if i0 >= i1:
@@ -111,6 +113,7 @@ class Script(object):
 
         reflections = flex.reflection_table.from_pickle("strong.pickle")
         shoebox = reflections['shoebox']
+        _,_,_,_,_,z1 = shoebox[-1].bbox
     
         #get dimensions of the image
         y_dim = imageset.get_raw_data(0)[0].all()[0]   
@@ -118,11 +121,10 @@ class Script(object):
 
         
         #create nested list of shoeboxes 
-        image_shoebox_l=init_list_of_objects(len(imageset))
+        image_shoebox_l=init_list_of_objects(z1)
 
         for sbox in shoebox:
             x0, x1, y0, y1, z0, z1 = sbox.bbox
-            
             for i in range(z0,z1):
                 image_shoebox_l[i].append(sbox)
 
@@ -131,7 +133,7 @@ class Script(object):
 
       
 
-        # Read image
+        # Loop through images
         for n in range(*scan_range):   
             logger.info("Reading image %d" % i)
 
