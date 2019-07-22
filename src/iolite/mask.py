@@ -73,11 +73,15 @@ class Script(object):
         from dials.util import log
         
         def init_list_of_objects(size):
-                list_of_objects = list()
-                for i in range(size):
-                    list_of_objects.append(list()) 
-                return list_of_objects
+            """ Create a list of empty lists of lenght size.""" 
+            list_of_objects = list()
+            for i in range(size):
+                list_of_objects.append(list()) 
+            return list_of_objects
         
+        #start timer
+        start=timer()
+
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
         experiments = ExperimentListFactory.from_json_file("datablock.json")
@@ -122,47 +126,51 @@ class Script(object):
             for i in range(z0,z1):
                 image_shoebox_l[i].append(sbox)
 
-            summed_data = None
-            summed_mask = None
+        summed_data = None
+        summed_mask = None
 
-        # Loop through images
-        for i in range(*scan_range):
+      
+
+        # Read image
+        for n in range(*scan_range):   
             logger.info("Reading image %d" % i)
 
-            # Read image
-            for n in range(*scan_range):   
-                logger.info("Reading image %d" % i)
+            mask_array = np.zeros((y_dim,x_dim), dtype=bool) 
+            data = tuple(i.as_numpy_array() for i in imageset.get_raw_data(n))[0]
+            mask = tuple(m.as_numpy_array() for m in imageset.get_mask(n))[0]
 
-                mask_array = np.zeros((y_dim,x_dim), dtype=bool) 
-                data = tuple(i.as_numpy_array() for i in imageset.get_raw_data(n))[0]
-                mask = tuple(m.as_numpy_array() for m in imageset.get_mask(n))[0]
+            #create strong spot mask of current image image
+            for sbox in image_shoebox_l[n]:
+                    
+                x0, x1, y0, y1, z0, z1 = sbox.bbox
+                mask_sp = sbox.mask.as_numpy_array()
+                mask_sp_slice = mask_sp[n-z0,:,:]
+                true_pixels = (mask_sp_slice == 5)
+                mask_array[y0:y1,x0:x1] = np.logical_or(mask_array[y0:y1,x0:x1], true_pixels)
 
-                #create strong spot mask for image
-                for sbox in image_shoebox_l[n]:
-                        
-                        x0, x1, y0, y1, z0, z1 = sbox.bbox
-                        mask_sp = sbox.mask.as_numpy_array()
-                        mask_sp_slice = mask_sp[n-z0,:,:]
-                        true_pixels = (mask_sp_slice == 5)
-                        mask_array[y0:y1,x0:x1] = np.logical_or(mask_array[y0:y1,x0:x1], true_pixels)
+            mask_array = ~mask_array
+            mask_combined = np.logical_and(mask,mask_array).astype(np.int)
 
-                mask_array = ~mask_array
-                mask_combined = np.logical_and(mask,mask_array).astype(np.int)
-                temp = data * mask_combined
 
-                if summed_data is None:
-                    summed_data = temp
-                    summed_mask = mask_combined
-                else:
-                    summed_data += temp
-                    summed_mask += mask_combined
-        
-   
+            #apply mask on data and sum data and mask up
+            temp = data * mask_combined
+
+            if summed_data is None:
+                summed_data = temp
+                summed_mask = mask_combined
+            else:
+                summed_data += temp
+                summed_mask += mask_combined
+
+        #calculate the average
         index = np.where(summed_mask > 0)
         summed_data[index] = summed_data[index] / summed_mask[index]
-
         average = summed_data
-        final_mask = summed_mask > 0
+        final_mask = summed_mask > 5
+
+        #filter out random high intensity pixels
+        from scipy.signal import medfilt
+        average = medfilt(average)
 
         # Compute min and max and num
         if params.num_bins is None:
@@ -184,10 +192,22 @@ class Script(object):
         from dials.algorithms.background import RadialAverage
 
         radial_average = RadialAverage(beam, detector, vmin, vmax, num_bins)
-        radial_average.add(average, summed_mask)
+        radial_average.add(flex.double(average.tolist()), flex.bool(final_mask))
         mean = radial_average.mean()
         reso = radial_average.inv_d2()
 
+        import matplotlib.pyplot as plt
+        plt.plot(reso, mean)
+        plt.ylabel('Mean Intensity')
+        plt.xlabel('Resolution')
+        plt.title('Mean intensity vs resolution')
+        plt.show()
+
+        #measure time taken
+        end=timer()
+        print('Time Taken:', end-start)
+
+        #write output file
         logger.info("Writing to %s" % params.output.filename)
         with open(params.output.filename, "w") as outfile:
             for r, m in zip(reso, mean):
