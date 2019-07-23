@@ -7,6 +7,7 @@ import scipy.signal
 from scipy.signal import find_peaks
 from sklearn import preprocessing
 
+
 class IceRingClassifier:
 '''This class takes resolution and intensity data from a .txt file and classifies the dataset wether it does contain ice-rings or not. 
 
@@ -19,7 +20,14 @@ class IceRingClassifier:
     '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, the filename to open and 
     the setting not to show a plot.
     '''
-        pass
+        self.min_1st_ir = min_1st_ir
+        self.max_1st_ir = max_1st_ir
+        self.min_2nd_ir = min_2nd_ir
+        self.max_2nd_ir = max_2nd_ir
+        self.min_3rd_ir = min_3rd_ir
+        self.max_3rd_ir = max_3rd_ir
+        self.inputFile = filename
+        self.showPlot = showPlot
     
     def resolution_intensity_from_txt(filename):
         '''Create a list of resolution data and intensity data from .txt file, respectively.
@@ -78,7 +86,7 @@ class IceRingClassifier:
         start = timer()
 
         #prepare data
-        resolution_data, intensity_data = resolution_intensity_from_txt("table.txt")
+        resolution_data, intensity_data = resolution_intensity_from_txt(self.filename)
     
 
         # scale intensity data to 100
@@ -90,28 +98,30 @@ class IceRingClassifier:
 
 
         #detect ice-rings
-
         count = [0]*3
-
-
         for i in range(len(resolution_peaks)):
-            if resolution_peaks[i]>0.073 and resolution_peaks[i]<0.0755:
+            if resolution_peaks[i]>self.min_1st_ir and resolution_peaks[i]<self.max_1st_ir:
                 count[0] = 1
-            if resolution_peaks[i]>0.190 and resolution_peaks[i]<0.200:
+            if resolution_peaks[i]>self.min_2nd_ir and resolution_peaks[i]<self.max_2nd_ir:
                 count[1] = 1
-            if resolution_peaks[i]>0.269 and resolution_peaks[i]<0.2745:
+            if resolution_peaks[i]>self.min_3rd_ir and resolution_peaks[i]<self.max_3rd_ir:
                 count[2] = 1
 
 
-        if resolution_data[-1]< 0.27:
-        #first case: resolution data does not include the resolution greater 0.27
-            if sum(count) ==2:
+        if resolution_data[-1]< self.max_2nd_ir:
+        #resolution data does not include the resolution greater 0.2
+            if sum(count) ==1:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
-
+        elif resolution_data[-1]< self.max_3rd_ir:
+        #resolution data does not include resolution greater 0.2745
+             if sum(count) ==2:
+                print("The data set contains ice-rings.")
+            else:
+                print("The data set does not contain ice-rings.")
         else: 
-            #resolution data includes resolution greater than 0.27
+            #resolution data includes resolution greater than 0.2745
             if sum(count) == 3:
                 print("The data set contains ice-rings.") 
             else:
@@ -135,4 +145,3 @@ class IceRingClassifier:
         """
 
     main()
-
