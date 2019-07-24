@@ -7,7 +7,8 @@ def main():
     """
     setup(
         packages=["src/iolite"],
-        scripts=["bin/make_radial_average"],
+        scripts=["bin/radial_average_bg",
+                 "bin/ice_rings"],
         install_requires=[],
         setup_requires=["pytest-runner"],
         tests_require=["pytest", "pytest-cov", "mock"],
