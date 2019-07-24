@@ -1,0 +1,8 @@
+#!/bin/env/python3
+
+import sys
+from iolite import radial_average_bg
+
+if __name__ == '__main__':
+    filename = sys.argv[1]
+    radial_average_bg(filename)
