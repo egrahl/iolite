@@ -11,9 +11,6 @@ help_message = """
 
 This program masks the strong spots of an image, followed by averaging of the images and making a radial average over resolution shells
 
-Examples::
-
-dev.dials.make_radial_average models.expt
 
 """
 
@@ -65,19 +62,20 @@ class Script(object):
             usage=usage, phil=phil_scope, epilog=help_message, read_experiments=True
         )
 
-    
+    def init_list_of_objects(self,size):
+        """ Create a list of empty lists of lenght size.""" 
+        list_of_objects = list()
+        for i in range(size):
+            list_of_objects.append(list()) 
+        return list_of_objects
+
 
     def run(self):
         """ Perform the integration. """
         from dials.util.options import flatten_experiments
         from dials.util import log
         
-        def init_list_of_objects(size):
-            """ Create a list of empty lists of lenght size.""" 
-            list_of_objects = list()
-            for i in range(size):
-                list_of_objects.append(list()) 
-            return list_of_objects
+       
         
         #start timer
         start=timer()
@@ -113,15 +111,15 @@ class Script(object):
 
         reflections = flex.reflection_table.from_pickle("strong.pickle")
         shoebox = reflections['shoebox']
-        _,_,_,_,_,z1 = shoebox[-1].bbox
+        
     
         #get dimensions of the image
         y_dim = imageset.get_raw_data(0)[0].all()[0]   
         x_dim = imageset.get_raw_data(0)[0].all()[1]     
 
-        
         #create nested list of shoeboxes 
-        image_shoebox_l=init_list_of_objects(z1)
+        _,_,_,_,_,z1 = shoebox[-1].bbox
+        image_shoebox_l=self.init_list_of_objects(z1)
 
         for sbox in shoebox:
             x0, x1, y0, y1, z0, z1 = sbox.bbox
@@ -198,12 +196,12 @@ class Script(object):
         mean = radial_average.mean()
         reso = radial_average.inv_d2()
 
-        import matplotlib.pyplot as plt
-        plt.plot(reso, mean)
-        plt.ylabel('Mean Intensity')
-        plt.xlabel('Resolution')
-        plt.title('Mean intensity vs resolution')
-        plt.show()
+        # import matplotlib.pyplot as plt
+        # plt.plot(reso, mean)
+        # plt.ylabel('Mean Intensity')
+        # plt.xlabel('Resolution')
+        # plt.title('Mean intensity vs resolution')
+        # plt.show()
 
         #measure time taken
         end=timer()
