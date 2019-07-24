@@ -60,8 +60,8 @@ class Script:
 
         # Create the parser
         self.parser = OptionParser(
-            usage=usage, phil=phil_scope, epilog=help_message, read_experiments=True
-        )
+            usage=usage, phil=phil_scope, epilog=help_message, read_experiments=True)
+            
 
     def init_list_of_objects(self,size):
         ''' Create a list of empty lists of length size.
@@ -74,6 +74,7 @@ class Script:
         for i in range(size):
             list_of_objects.append(list()) 
         return list_of_objects
+
 
     def summed_data_mask(self,imageset,scan_range,shoebox):
         '''Create numpy array of summed data and summed mask of an imageset,respectively, including masking of strong spots. 
@@ -105,7 +106,7 @@ class Script:
             data = tuple(i.as_numpy_array() for i in imageset.get_raw_data(n))[0]
             mask = tuple(m.as_numpy_array() for m in imageset.get_mask(n))[0]
 
-            #create strong spot mask of current image image
+            #create strong spot mask of current image 
             for sbox in image_shoebox_l[n]:
                     
                 x0, x1, y0, y1, z0, z1 = sbox.bbox
