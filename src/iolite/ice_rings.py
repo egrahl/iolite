@@ -9,15 +9,24 @@ from sklearn import preprocessing
 
 
 class IceRingClassifier:
-    '''This class takes resolution and intensity data from a .txt file and classifies the dataset wether it does contain ice-rings or not. 
+    '''This class takes resolution and intensity data from a .txt file and classifies the dataset whether it does contain ice-rings or not. 
     '''
     def __init__(self, 
-                min_1st_ir=0.073,max_1st_ir=0.0755,
-                min_2nd_ir=0.196,max_2nd_ir=0.200,
-                min_3rd_ir=0.269,max_3rd_ir=0.2745, 
-                filename="table.txt",showPlot=False):
+                min_1st_ir,max_1st_ir,
+                min_2nd_ir,max_2nd_ir,
+                min_3rd_ir,max_3rd_ir, 
+                filename,showPlot):
         '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, the filename to open and 
         the setting not to show a plot.
+
+        :param float min_1st_ir: The minimum resolution at which the first ice-ring can be detected. (default = 0.073)
+        :param float max_1st_ir: The maximum resolution at which the first ice-ring can be detected. (default = 0.0755)
+        :param float min_2nd_ir: The minimum resolution at which the second ice-ring can be detected. (default = 0.196)
+        :param float max_2nd_ir: The maximum resolution at which the second ice-ring can be detected. (default = 0.200)
+        :param float min_3rd_ir: The minimum resolution at which the third ice-ring can be detected. (default = 0.269)
+        :param float max_3rd_ir: The maximum resolution at which the third ice-ring can be detected.(default = 0.2745)
+        :param str filename: name of file that contains the resolution and intensity data (default= "table.txt")
+        :param bool showPlot: The boolean that determines if the data should be plotted.(default = False)
         '''
         self.min_1st_ir = min_1st_ir
         self.max_1st_ir = max_1st_ir
@@ -31,7 +40,7 @@ class IceRingClassifier:
     def resolution_intensity_from_txt(self):
         '''Create a list of resolution data and intensity data from .txt file, respectively.
         
-        :param str filename: name of txt file the resolution and intensity data lists are created from
+        #:param str filename: name of txt file the resolution and intensity data lists are created from
         :returns: list of resolution data and list of intensity data
         '''
         filein=open(self.inputFile,"r")
@@ -80,24 +89,29 @@ class IceRingClassifier:
         return resolution_peaks
 
     def ice_ring_plot(self, resolution_data,intensity_data,res_line):
+        '''Plots intensity data against resolution with vertical lines at resolution where an ice-ring was found and saves plot to plot.png.
+
+        :param list resolution_data: list of resolution data
+        :param numpy array intensity_data: list of intensity data
+        :param list res_line: list containing resolutions at which ice-rings were found
+        '''
         plt.plot(resolution_data, intensity_data)
         for res in res_line:
             plt.axvline(x=res,color='red')
-        plt.ylabel('Mean Intensity (Scaled)')
+        plt.ylabel('Mean Intensity')
         plt.xlabel('Resolution')
         plt.title('Mean intensity vs resolution')
         plt.savefig('plot')
         plt.show()
 
 
-    def run(self):
-
+    def main(self):
+        '''The main function of ice_rings that classifies the data set. '''
         start = timer()
 
         #prepare data
         resolution_data, intensity_data = self.resolution_intensity_from_txt()
     
-
         # scale intensity data to range 0 to 100
         intensity_scaled = self.scale_intensity(intensity_data,0,100)
 
@@ -107,34 +121,34 @@ class IceRingClassifier:
         resolution_peaks_plt =[]
 
         #detect ice-rings
-        count = [0]*3
+        count = 0
         for res in resolution_peaks:
             if res>self.min_1st_ir and res<self.max_1st_ir:
-                count[0] = 1
+                count += 1
                 resolution_peaks_plt.append(res)
             if res>self.min_2nd_ir and res<self.max_2nd_ir:
-                count[1] = 1
+                count += 1
                 resolution_peaks_plt.append(res)
             if res>self.min_3rd_ir and res<self.max_3rd_ir:
-                count[2] = 1
+                count += 1
                 resolution_peaks_plt.append(res)
 
-
+        #decide if data set contains ice-rings
         if resolution_data[-1]< self.max_2nd_ir:
         #resolution data does not include the resolution greater 0.2
-            if sum(count) ==1:
+            if count ==1:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
         elif resolution_data[-1]< self.max_3rd_ir:
         #resolution data does not include resolution greater 0.2745
-            if sum(count) ==2:
+            if count ==2:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
         else: 
             #resolution data includes resolution greater than 0.2745
-            if sum(count) == 3:
+            if count == 3:
                 print("The data set contains ice-rings.") 
             else:
                 print("The data set does not contain ice-rings.")
@@ -143,13 +157,58 @@ class IceRingClassifier:
         end =timer()
 
         print('Time taken:', end-start)
+        
+        #plot data
         if self.showPlot ==True:
             self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt)
 
+def run():
+    '''Allows ice_rings to be called from command line.'''
+    import argparse
+    
+    parser = argparse.ArgumentParser(description = 'command line argument')
+    parser.add_argument('--min_1st_ir',
+                        dest = 'min_1st_ir',
+                        type = float,
+                        help = 'The minimum resolution at which the first ice-ring can be detected.',default = 0.073)
+    parser.add_argument('--max_1st_ir',
+                        dest = 'max_1st_ir',
+                        type = float,
+                        help = 'The maximum resolution at which the first ice-ring can be detected.',default = 0.0755)
+    parser.add_argument('--min_2nd_ir',
+                        dest = 'min_2nd_ir',
+                        type = float,
+                        help = 'The minimum resolution at which the second ice-ring can be detected.',default = 0.196)
+    parser.add_argument('--max_2nd_ir',
+                        dest = 'max_2nd_ir',
+                        type = float,
+                        help = 'The maximum resolution at which the second ice-ring can be detected.',default = 0.200)
+    parser.add_argument('--min_3rd_ir',
+                        dest = 'min_3rd_ir',
+                        type = float,
+                        help = 'The minimum resolution at which the third ice-ring can be detected.',default = 0.269)
+    parser.add_argument('--max_3rd_ir',
+                        dest = 'max_3rd_ir',
+                        type = float,
+                        help = 'The maximum resolution at which the third ice-ring can be detected.',default = 0.2745)
+    parser.add_argument('--filename',
+                        dest = 'filename',
+                        type = str,
+                        help = 'The name of the file that contains the resolution and intensity data.',default = "table.txt")
+    parser.add_argument('--showPlot',
+                        dest = 'showPlot',
+                        type = bool,
+                        help = 'The boolean that determines if the data should be plotted.',default = False)
 
+
+    args=parser.parse_args()
+    ice_ring_classifier = IceRingClassifier(args.min_1st_ir,arg.max_1st_ir,
+                                            args.min_2nd_ir,args.max_2nd_ir,
+                                            args.min_3rd_ir,args.max_3rd_ir,
+                                            args.filename,args.showPlot)
+    ice_ring_classifier.main()
 
 if __name__ == "__main__":
-    ice_ring_classifier = IceRingClassifier(showPlot=True)
-    ice_ring_classifier.run()
+    run()
 
 
