@@ -16,8 +16,8 @@ class IceRingClassifier:
                 min_2nd_ir,max_2nd_ir,
                 min_3rd_ir,max_3rd_ir, 
                 filename,showPlot):
-        '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, the filename to open and 
-        the setting not to show a plot.
+        '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, 
+        the filename to open and the setting not to show a plot.
 
         :param float min_1st_ir: The minimum resolution at which the first ice-ring can be detected. (default = 0.073)
         :param float max_1st_ir: The maximum resolution at which the first ice-ring can be detected. (default = 0.0755)
@@ -28,6 +28,7 @@ class IceRingClassifier:
         :param str filename: name of file that contains the resolution and intensity data (default= "table.txt")
         :param bool showPlot: The boolean that determines if the data should be plotted.(default = False)
         '''
+
         self.min_1st_ir = min_1st_ir
         self.max_1st_ir = max_1st_ir
         self.min_2nd_ir = min_2nd_ir
@@ -43,6 +44,7 @@ class IceRingClassifier:
         #:param str filename: name of txt file the resolution and intensity data lists are created from
         :returns: list of resolution data and list of intensity data
         '''
+
         filein=open(self.inputFile,"r")
 
         resolution_data = []
@@ -63,6 +65,7 @@ class IceRingClassifier:
         :param int max: maximum value of the scaled intensity data
         :returns: a 1D numpy array containing the scaled intensity data 
         '''
+
         #reshape array to make it compatible for scaling
         intensity_data_reshape = np.reshape(np.array(raw_intensity),(-1,1))
 
@@ -140,19 +143,20 @@ class IceRingClassifier:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
+
         elif resolution_data[-1]< self.max_3rd_ir:
         #resolution data does not include resolution greater 0.2745
             if count ==2:
                 print("The data set contains ice-rings.")
             else:
                 print("The data set does not contain ice-rings.")
+
         else: 
             #resolution data includes resolution greater than 0.2745
             if count == 3:
                 print("The data set contains ice-rings.") 
             else:
                 print("The data set does not contain ice-rings.")
-
 
         end =timer()
 
@@ -170,39 +174,47 @@ def run():
     parser.add_argument('--min_1st_ir',
                         dest = 'min_1st_ir',
                         type = float,
-                        help = 'The minimum resolution at which the first ice-ring can be detected.',default = 0.073)
+                        help = 'The minimum resolution at which the first ice-ring can be detected.',
+                        default = 0.073)
     parser.add_argument('--max_1st_ir',
                         dest = 'max_1st_ir',
                         type = float,
-                        help = 'The maximum resolution at which the first ice-ring can be detected.',default = 0.0755)
+                        help = 'The maximum resolution at which the first ice-ring can be detected.',
+                        default = 0.0755)
     parser.add_argument('--min_2nd_ir',
                         dest = 'min_2nd_ir',
                         type = float,
-                        help = 'The minimum resolution at which the second ice-ring can be detected.',default = 0.196)
+                        help = 'The minimum resolution at which the second ice-ring can be detected.',
+                        default = 0.196)
     parser.add_argument('--max_2nd_ir',
                         dest = 'max_2nd_ir',
                         type = float,
-                        help = 'The maximum resolution at which the second ice-ring can be detected.',default = 0.200)
+                        help = 'The maximum resolution at which the second ice-ring can be detected.',
+                        default = 0.200)
     parser.add_argument('--min_3rd_ir',
                         dest = 'min_3rd_ir',
                         type = float,
-                        help = 'The minimum resolution at which the third ice-ring can be detected.',default = 0.269)
+                        help = 'The minimum resolution at which the third ice-ring can be detected.',
+                        default = 0.269)
     parser.add_argument('--max_3rd_ir',
                         dest = 'max_3rd_ir',
                         type = float,
-                        help = 'The maximum resolution at which the third ice-ring can be detected.',default = 0.2745)
+                        help = 'The maximum resolution at which the third ice-ring can be detected.',
+                        default = 0.2745)
     parser.add_argument('--filename',
                         dest = 'filename',
                         type = str,
-                        help = 'The name of the file that contains the resolution and intensity data.',default = "table.txt")
+                        help = 'The name of the file that contains the resolution and intensity data.',
+                        default = "table.txt")
     parser.add_argument('--showPlot',
                         dest = 'showPlot',
                         type = bool,
-                        help = 'The boolean that determines if the data should be plotted.',default = False)
+                        help = 'The boolean that determines if the data should be plotted.',
+                        default = False)
 
 
     args=parser.parse_args()
-    ice_ring_classifier = IceRingClassifier(args.min_1st_ir,arg.max_1st_ir,
+    ice_ring_classifier = IceRingClassifier(args.min_1st_ir,args.max_1st_ir,
                                             args.min_2nd_ir,args.max_2nd_ir,
                                             args.min_3rd_ir,args.max_3rd_ir,
                                             args.filename,args.showPlot)
