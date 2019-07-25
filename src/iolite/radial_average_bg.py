@@ -61,7 +61,7 @@ class Script:
         # Create the parser
         self.parser = OptionParser(
             usage=usage, phil=phil_scope, epilog=help_message, read_experiments=True)
-            
+
 
     def init_list_of_objects(self,size):
         ''' Create a list of empty lists of length size.
@@ -141,7 +141,8 @@ class Script:
 
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
-        experiments = flatten_experiments(params.input.experiments)   
+        experiments = flatten_experiments(params.input.experiments)
+        #experiments = ExperimentListFactory.from_json_file("datablock.json")     
         if len(experiments) == 0:
             self.parser.print_help()
             return
