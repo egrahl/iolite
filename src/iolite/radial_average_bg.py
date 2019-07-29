@@ -16,11 +16,11 @@ from libtbx.phil import parse
 
 phil_scope = parse(
     """
-  input {
-    filename_pickle = 'strong.pickle'
+  
+  filename_pickle = 'strong.pickle'
         .type = str
         .help = "The filename of the file containing information about strong spots."
-  }
+  
   output {
     filename = 'table.txt'
       .type = str
@@ -151,7 +151,7 @@ class Script:
         imageset = experiments[0].imageset
         beam = experiments[0].beam
         detector = experiments[0].detector
-        reflections = flex.reflection_table.from_pickle(params.input.filename_pickle)
+        reflections = flex.reflection_table.from_pickle(params.filename_pickle)
         shoebox = reflections['shoebox']
 
         
@@ -183,7 +183,9 @@ class Script:
 
         #save average as .png file
         from matplotlib import pylab
+        pylab.imshow(average)
         pylab.imsave('average_data',average)
+        pylab.show()
         
 
         # Compute min and max and num
