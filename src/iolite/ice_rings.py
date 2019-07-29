@@ -26,7 +26,7 @@ class IceRingClassifier:
         :param float min_3rd_ir: The minimum resolution at which the third ice-ring can be detected. (default = 0.269)
         :param float max_3rd_ir: The maximum resolution at which the third ice-ring can be detected.(default = 0.2745)
         :param str filename: name of file that contains the resolution and intensity data (default= "table.txt")
-        :param bool showPlot: The boolean that determines if the data should be plotted.(default = False)
+        :param bool showPlot: The boolean that determines if the data should be plotted. (default = False)
         '''
 
         self.min_1st_ir = min_1st_ir
@@ -119,7 +119,7 @@ class IceRingClassifier:
         intensity_scaled = self.scale_intensity(intensity_data,0,100)
 
         #peak detection
-        peaks, _ = scipy.signal.find_peaks(intensity_scaled, prominence=0.4, width=7)
+        peaks, _ = scipy.signal.find_peaks(intensity_scaled, prominence=0.2, width=4)  #prom=0.4 w=7
         resolution_peaks = self.resolution_peak_list(peaks,resolution_data)
         resolution_peaks_plt =[]
 
@@ -136,11 +136,14 @@ class IceRingClassifier:
                 count += 1
                 resolution_peaks_plt.append(res)
 
+        ice_ring = 0
+
         #decide if data set contains ice-rings
         if resolution_data[-1]< self.max_2nd_ir:
         #resolution data does not include the resolution greater 0.2
             if count ==1:
                 print("The data set contains ice-rings.")
+                ice_ring = 1
             else:
                 print("The data set does not contain ice-rings.")
 
@@ -148,6 +151,7 @@ class IceRingClassifier:
         #resolution data does not include resolution greater 0.2745
             if count ==2:
                 print("The data set contains ice-rings.")
+                ice_ring = 1
             else:
                 print("The data set does not contain ice-rings.")
 
@@ -155,6 +159,7 @@ class IceRingClassifier:
             #resolution data includes resolution greater than 0.2745
             if count == 3:
                 print("The data set contains ice-rings.") 
+                ice_ring = 1
             else:
                 print("The data set does not contain ice-rings.")
 
@@ -165,6 +170,8 @@ class IceRingClassifier:
         #plot data
         if self.showPlot ==True:
             self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt)
+        
+        return ice_ring
 
 def run():
     '''Allows ice_rings to be called from command line.'''
