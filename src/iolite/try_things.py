@@ -18,6 +18,7 @@ for i in range(10):
 # Read image
             
     data = imageset.get_raw_data(i)
+    
     mask = imageset.get_mask(i)
     assert isinstance(data, tuple)
     assert isinstance(mask, tuple)
@@ -28,11 +29,41 @@ for i in range(10):
     else:
         summed_data = [sd + d for sd, d in zip(summed_data, data)]
         summed_mask = [sm & m for sm, m in zip(summed_mask, mask)]        
-
+print(data[0].all()[0], data[0].all()[1])
+print(type(summed_mask[0]))
 mask_np = mask[0].as_numpy_array()
 data_np = data[0].as_numpy_array()
+summed_data_np = summed_data[0].as_numpy_array()
+summed_mask_np = summed_mask[0].as_numpy_array()
 
 from matplotlib import pylab
-pylab.imshow(mask_np)
+pylab.imshow(summed_data_np,vmax=2000)
 pylab.show()
-#print(help(imageset))
+
+########################################################################
+# code for ice-ring-test:
+
+list_PDB_id = dataset_list()
+results=np.empty((len(list_PDB_id),2))
+os.chdir("/dls/mx-scratch/gwx73773/data_files")
+pickle_file=None
+count=0
+for id in list_PDB_id:
+    
+    for file in os.listdir(os.path.join(os.getcwd(),id)):    
+        if file.endswith("table.txt"):
+            
+            ice_ring_classifier=IceRingClassifier(0.073,0.0755,0.196,0.200,0.269,0.2745,"table.txt",True)
+            ice_ring_detected= ice_ring_classifier.main()
+            results[list_PDB_id.index(id),1]= ice_ring_detecte
+            os.system("dials.image_viewer imported.expt")
+            ice_ring_present= input("Ice-rings present? [0/1]: ")
+            results[list_PDB_id.index(id),0]=ice_ring_present
+
+    os.chdir("/dls/mx-scratch/gwx73773/data_files")
+    count +=1
+    print(count, id)
+output_file= input("Name of output file: ")
+np.savetxt(output_file,results)    
+
+
