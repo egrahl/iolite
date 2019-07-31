@@ -33,9 +33,18 @@ def read_PDB_id():
     
     return pdb_ids
 
+def write_outfile(name,number,list):
+    outfile_name= name+"_"+number+".txt"
+    with open(outfile_name, "w") as outfile:
+        for l in list:
+            outfile.write("%s\n" % l)
+      
+
 
 def main():
-    ir_present, ir_detected = lists_from_txt("results.txt")
+    number = input("Number of attempt: ")
+    input_file = "results_"+number+".txt"
+    ir_present, ir_detected = lists_from_txt(input_file)
     n_tp=0
     n_tn=0
     n_fp=0
@@ -43,10 +52,13 @@ def main():
     pdb_ids = read_PDB_id()
     list_fn= []
     list_fp = []
+    list_tp=[]
+    list_tn=[]
 
     for p, d, i in zip(ir_present,ir_detected,pdb_ids):
         if p==1 and d==1:
             n_tp +=1
+            list_tp.append(i)
         elif p==1 and d==0:
             n_fn +=1
             list_fn.append(i)
@@ -55,6 +67,7 @@ def main():
             list_fp.append(i)
         elif p==0 and d==0:
             n_tn +=1
+            list_tn.append(i)
     print("The number of true positives is: ",n_tp)
     print("The number of true negatives is: ",n_tn)
     print("The number of false positives is: ",n_fp)
@@ -64,16 +77,13 @@ def main():
     
     print(list_fn)
     print(list_fp)
-    """
-    with open("false_positives.txt", "w") as outfile:
-        for fp in list_fp:
-            outfile.write("%s\n" % fp)     
 
-    with open("false_negatives.txt", "w") as outfile:
-        for fn in list_fn:
-            outfile.write("%s\n" % fn)      
-    """
+    write_outfile("false_positive",number,list_fp)
+    write_outfile("false_negative",number,list_fn)
+    write_outfile("true_positive",number,list_tp)
+    write_outfile("true_negative",number,list_tn)
 
+   
 
     
 
