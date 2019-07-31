@@ -1,40 +1,28 @@
 from timeit import default_timer as timer
 
 import matplotlib.pyplot as plt
+from matplotlib.ticker import FuncFormatter
 import numpy as np
 import scipy
 import scipy.signal
 from scipy.signal import find_peaks
 from sklearn import preprocessing
+from math import sqrt
+import bisect
 
 
 class IceRingClassifier:
     '''This class takes resolution and intensity data from a .txt file and classifies the dataset whether it does contain ice-rings or not. 
     '''
-    def __init__(self, 
-                min_1st_ir,max_1st_ir,
-                min_2nd_ir,max_2nd_ir,
-                min_3rd_ir,max_3rd_ir, 
-                filename,showPlot):
+    def __init__(self,filename,showPlot):
         '''The ice ring classifier is initialized with default settings for the resolution limits of the ice rings, 
         the filename to open and the setting not to show a plot.
 
-        :param float min_1st_ir: The minimum resolution at which the first ice-ring can be detected. (default = 0.073)
-        :param float max_1st_ir: The maximum resolution at which the first ice-ring can be detected. (default = 0.0755)
-        :param float min_2nd_ir: The minimum resolution at which the second ice-ring can be detected. (default = 0.196)
-        :param float max_2nd_ir: The maximum resolution at which the second ice-ring can be detected. (default = 0.200)
-        :param float min_3rd_ir: The minimum resolution at which the third ice-ring can be detected. (default = 0.269)
-        :param float max_3rd_ir: The maximum resolution at which the third ice-ring can be detected.(default = 0.2745)
+       
         :param str filename: name of file that contains the resolution and intensity data (default= "table.txt")
         :param bool showPlot: The boolean that determines if the data should be plotted. (default = False)
         '''
 
-        self.min_1st_ir = min_1st_ir
-        self.max_1st_ir = max_1st_ir
-        self.min_2nd_ir = min_2nd_ir
-        self.max_2nd_ir = max_2nd_ir
-        self.min_3rd_ir = min_3rd_ir
-        self.max_3rd_ir = max_3rd_ir
         self.inputFile = filename
         self.showPlot = showPlot
     
@@ -91,21 +79,116 @@ class IceRingClassifier:
        
         return resolution_peaks
 
-    def ice_ring_plot(self, resolution_data,intensity_data,res_line):
+    def ice_ring_plot(self, resolution_data,intensity_data,res_line,min_d2,max_d2):
         '''Plots intensity data against resolution with vertical lines at resolution where an ice-ring was found and saves plot to plot.png.
 
         :param list resolution_data: list of resolution data
         :param numpy array intensity_data: list of intensity data
         :param list res_line: list containing resolutions at which ice-rings were found
         '''
+        def format_xticks(x, p):
+            if x <= 0:
+                return None
+            return "%.2f" % sqrt(1/x)
+
+        fig, ax = plt.subplots()
+        ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
         plt.plot(resolution_data, intensity_data)
+        
+        for min,max in zip(min_d2,max_d2):
+            ax.axvspan(min, max, alpha=0.4, color='yellow')
         for res in res_line:
             plt.axvline(x=res,color='red')
+        plt.xlim(right=resolution_data[-1])
         plt.ylabel('Mean Intensity')
         plt.xlabel('Resolution')
         plt.title('Mean intensity vs resolution')
-        plt.savefig('plot')
+        #plt.savefig('plot')
         plt.show()
+
+    def read_resolution_ranges(self):
+        min_d2 = []
+        max_d2 = []
+        for line in open("/dls/science/users/gwx73773/iolite/share/hexagonal.txt").readlines():
+            a, b = map(float, line.split())
+            min_d2.append(a)
+            max_d2.append(b)
+        return min_d2, max_d2
+
+    def mean_variance(self,intensity_data):
+        width = 9
+        mean_data=[0]*width
+        var_data = [0]*width
+        variance_mean_data = [0]*width
+        for i in range(width,(len(intensity_data)-width)):
+        
+            window= np.array(intensity_data[(i-width):(i+width+1)])
+            mean= np.mean(window)
+            mean_data.append(mean)
+            variance = np.var(window)
+            var_data.append(variance)
+            if mean ==0:
+                variance_mean = 0
+            else:
+                variance_mean= variance/mean
+            variance_mean_data.append(variance_mean)
+        for n in range(width):
+            mean_data.append(0)
+            var_data.append(0)
+            variance_mean_data.append(0)
+
+        return mean_data, var_data, variance_mean_data
+
+    def compare_mean(self, resolution_data, intensity_data, min_d2, max_d2):
+        mean_window_l = []
+        mean_neighbours=[]
+        ratio=[]
+        for min, max in zip(min_d2, max_d2):
+            index_min_int=bisect.bisect_right(resolution_data,min)
+            index_max_int=bisect.bisect_left(resolution_data,max)
+            print(index_min_int, index_max_int)
+            window = np.array(intensity_data[index_min_int:(index_max_int+1)])
+            print(window)
+            mean_window=np.mean(window)
+            index = min_d2.index(min)
+            
+            if index==0:
+                index_right=bisect.bisect_left(resolution_data,((min_d2[index+1]+max)/2))
+                window_right = np.array(intensity_data[index_max_int:index_right])
+                mean_right = np.mean(window_right)
+                index_left=bisect.bisect_right(resolution_data,(min-(min_d2[index+1]-max)/2))
+                window_left= np.array(intensity_data[index_left:index_min_int])
+                mean_left = np.mean(window_left)
+            elif index ==(len(min_d2)-1):
+                index_left=bisect.bisect_right(resolution_data,((min+max_d2[index-1])/2))
+                window_left = np.array(intensity_data[index_left:index_min_int])
+                mean_right = np.mean(window_right)
+                index_right=bisect.bisect_left(resolution_data,(max+(min-max_d2[index-1])/2))
+                window_right= np.array(intensity_data[index_max_int:index_right])
+                mean_right = np.mean(window_right)
+            else:
+                width_left=(min-max_d2[index-1])
+                width_right= (min_d2[index+1]-max)
+                if width_left<width_right:
+                    index_left=bisect.bisect_right(resolution_data,((min+max_d2[index-1])/2))
+                    window_left = np.array(intensity_data[index_left:index_min_int])
+                    mean_right = np.mean(window_right)
+                    index_right=bisect.bisect_left(resolution_data,(max+(min-max_d2[index-1])/2))
+                    window_right= np.array(intensity_data[index_max_int:index_right])
+                    mean_right = np.mean(window_right)
+                else:
+                    index_right=bisect.bisect_left(resolution_data,((min_d2[index+1]+max)/2))
+                    window_right = np.array(intensity_data[index_max_int:index_right])
+                    mean_right = np.mean(window_right)
+                    index_left=bisect.bisect_right(resolution_data,(min-(min_d2[index+1]-max)/2))
+                    window_left= np.array(intensity_data[index_left:index_min_int])
+                    mean_left = np.mean(window_left)
+            mean_neighbours.append((mean_left+mean_right)/2)
+            ratio.append((2*mean_window)/(mean_left+mean_right))
+
+        return ratio
+
+
 
 
     def main(self):
@@ -114,31 +197,53 @@ class IceRingClassifier:
 
         #prepare data
         resolution_data, intensity_data = self.resolution_intensity_from_txt()
-    
+
+        # from scipy.signal import savgol_filter   
+        # data = savgol_filter(intensity_data, 51, 3, deriv=2)
+        # plt.plot(data)
+        # plt.show()
+
         # scale intensity data to range 0 to 100
         intensity_scaled = self.scale_intensity(intensity_data,0,100)
 
         #peak detection
-        peaks, _ = scipy.signal.find_peaks(intensity_scaled, prominence=0.2, width=4)  #prom=0.4 w=7
+        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)], prominence=1.1, width=7)  #prom=0.4 w=7
         resolution_peaks = self.resolution_peak_list(peaks,resolution_data)
         resolution_peaks_plt =[]
+
+        min_d2, max_d2 = self.read_resolution_ranges()
+        #ratio=self.compare_mean(resolution_data,intensity_data,min_d2,max_d2)
 
         #detect ice-rings
         count = 0
         for res in resolution_peaks:
-            if res>self.min_1st_ir and res<self.max_1st_ir:
-                count += 1
-                resolution_peaks_plt.append(res)
-            if res>self.min_2nd_ir and res<self.max_2nd_ir:
-                count += 1
-                resolution_peaks_plt.append(res)
-            if res>self.min_3rd_ir and res<self.max_3rd_ir:
-                count += 1
-                resolution_peaks_plt.append(res)
-
+            for a, b in zip(min_d2, max_d2):
+                if res >= a and res <= b:
+                    count += 1
+                    resolution_peaks_plt.append(res)
+            # if res>self.min_1st_ir and res<self.max_1st_ir:
+            #     count += 1
+            #     resolution_peaks_plt.append(res)
+            # if res>self.min_2nd_ir and res<self.max_2nd_ir:
+            #     count += 1
+            #     resolution_peaks_plt.append(res)
+            # if res>self.min_3rd_ir and res<self.max_3rd_ir:
+            #     count += 1
+            #     resolution_peaks_plt.append(res)
+        print("Number of found ice-rings:", count)
         ice_ring = 0
 
         #decide if data set contains ice-rings
+        if count >1:
+            ice_ring=1
+        
+        if ice_ring ==1:
+            print("The dataset contains ice-rings.")
+        else: 
+            print("The dataset does not contain ice-rings.")
+       
+
+        """
         if resolution_data[-1]< self.max_2nd_ir:
         #resolution data does not include the resolution greater 0.2
             if count ==1:
@@ -162,52 +267,45 @@ class IceRingClassifier:
                 ice_ring = 1
             else:
                 print("The data set does not contain ice-rings.")
-
+        """
         end =timer()
 
         print('Time taken:', end-start)
         
+        #variance over mean
+        # mean_data, variance_data, variance_mean_data = self.mean_variance(intensity_data)
+        # index1=bisect.bisect_right(resolution_data,0.0625)
+        # index2= bisect.bisect_left(resolution_data,0.29)
+        # def format_xticks(x, p):
+        #     if x <= 0:
+        #         return None
+        #     return "%.2f" % sqrt(1/x)
+
+        # fig, ax = plt.subplots()
+        # ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
+        # plt.plot(resolution_data[index1:index2],variance_mean_data[index1:index2])
+        # for min,max in zip(min_d2,max_d2):
+        #     ax.axvspan(min, max, alpha=0.5, color='red')
+        # plt.xlim(resolution_data[index1],resolution_data[index2])
+        # plt.ylabel('variance/mean')
+        # plt.xlabel('Resolution')
+        # plt.title('variance/mean vs resolution')
+        # plt.show()
+
+
+
         #plot data
         if self.showPlot ==True:
-            self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt)
+            self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt,min_d2,max_d2)
         
-        return ice_ring
+        return ice_ring, count
 
 def run():
     '''Allows ice_rings to be called from command line.'''
     import argparse
     
     parser = argparse.ArgumentParser(description = 'command line argument')
-    parser.add_argument('--min_1st_ir',
-                        dest = 'min_1st_ir',
-                        type = float,
-                        help = 'The minimum resolution at which the first ice-ring can be detected.',
-                        default = 0.073)
-    parser.add_argument('--max_1st_ir',
-                        dest = 'max_1st_ir',
-                        type = float,
-                        help = 'The maximum resolution at which the first ice-ring can be detected.',
-                        default = 0.0755)
-    parser.add_argument('--min_2nd_ir',
-                        dest = 'min_2nd_ir',
-                        type = float,
-                        help = 'The minimum resolution at which the second ice-ring can be detected.',
-                        default = 0.196)
-    parser.add_argument('--max_2nd_ir',
-                        dest = 'max_2nd_ir',
-                        type = float,
-                        help = 'The maximum resolution at which the second ice-ring can be detected.',
-                        default = 0.200)
-    parser.add_argument('--min_3rd_ir',
-                        dest = 'min_3rd_ir',
-                        type = float,
-                        help = 'The minimum resolution at which the third ice-ring can be detected.',
-                        default = 0.269)
-    parser.add_argument('--max_3rd_ir',
-                        dest = 'max_3rd_ir',
-                        type = float,
-                        help = 'The maximum resolution at which the third ice-ring can be detected.',
-                        default = 0.2745)
+  
     parser.add_argument('--filename',
                         dest = 'filename',
                         type = str,
@@ -221,10 +319,7 @@ def run():
 
 
     args=parser.parse_args()
-    ice_ring_classifier = IceRingClassifier(args.min_1st_ir,args.max_1st_ir,
-                                            args.min_2nd_ir,args.max_2nd_ir,
-                                            args.min_3rd_ir,args.max_3rd_ir,
-                                            args.filename,args.showPlot)
+    ice_ring_classifier = IceRingClassifier(args.filename,args.showPlot)
     ice_ring_classifier.main()
 
 if __name__ == "__main__":
