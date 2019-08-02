@@ -56,7 +56,7 @@ class Script:
         import libtbx.load_env
 
         # The script usage
-        usage = "usage: iolite.radial_average_bg [options] datablock.json"
+        usage = "usage: iolite.radial_average_bg [options] imported.expt"
 
         # Create the parser
         self.parser = OptionParser(
@@ -142,7 +142,7 @@ class Script:
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
         experiments = flatten_experiments(params.input.experiments)
-        #experiments = ExperimentListFactory.from_json_file("datablock.json")     
+        #experiments = ExperimentListFactory.from_json_file("11_refined_experiments.json")     
         if len(experiments) == 0:
             self.parser.print_help()
             return
