@@ -9,7 +9,10 @@ from scipy.signal import find_peaks
 from sklearn import preprocessing
 from math import sqrt
 import bisect
-
+import os
+import os.path
+import sympy
+from sympy import limit, Symbol
 
 class IceRingClassifier:
     '''This class takes resolution and intensity data from a .txt file and classifies the dataset whether it does contain ice-rings or not. 
@@ -53,7 +56,6 @@ class IceRingClassifier:
         :param int max: maximum value of the scaled intensity data
         :returns: a 1D numpy array containing the scaled intensity data 
         '''
-
         #reshape array to make it compatible for scaling
         intensity_data_reshape = np.reshape(np.array(raw_intensity),(-1,1))
 
@@ -88,9 +90,11 @@ class IceRingClassifier:
         '''
         def format_xticks(x, p):
             if x <= 0:
-                return None
-            return "%.2f" % sqrt(1/x)
-
+                return " "
+            else:    
+                return "%.2f" % sqrt(1/x)
+        
+        pdb_id= self.get_PDB_id()
         fig, ax = plt.subplots()
         ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
         plt.plot(resolution_data, intensity_data)
@@ -99,11 +103,11 @@ class IceRingClassifier:
             ax.axvspan(min, max, alpha=0.4, color='yellow')
         for res in res_line:
             plt.axvline(x=res,color='red')
-        plt.xlim(right=resolution_data[-1])
-        plt.ylabel('Mean Intensity')
+        plt.xlim(left=resolution_data[0],right=resolution_data[-1])
+        plt.ylabel('Mean Intensity (scaled)')
         plt.xlabel('Resolution')
-        plt.title('Mean intensity vs resolution')
-        #plt.savefig('plot')
+        plt.title('Mean intensity vs. resolution for '+pdb_id)
+        plt.savefig('plot')
         plt.show()
 
     def read_resolution_ranges(self):
@@ -188,6 +192,11 @@ class IceRingClassifier:
 
         return ratio
 
+    def get_PDB_id(self):
+        dirpath = os.getcwd()
+        foldername = os.path.basename(dirpath)
+        return foldername
+
 
 
 
@@ -198,107 +207,95 @@ class IceRingClassifier:
         #prepare data
         resolution_data, intensity_data = self.resolution_intensity_from_txt()
 
-        # from scipy.signal import savgol_filter   
-        # data = savgol_filter(intensity_data, 51, 3, deriv=2)
-        # plt.plot(data)
-        # plt.show()
+       
 
         # scale intensity data to range 0 to 100
         intensity_scaled = self.scale_intensity(intensity_data,0,100)
 
         #peak detection
-        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)], prominence=1.1, width=7)  #prom=0.4 w=7
+        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)],prominence=1.1,rel_height=0.2, width= 1.5)  
         resolution_peaks = self.resolution_peak_list(peaks,resolution_data)
         resolution_peaks_plt =[]
+        prominences =[]
+        widths=[]
+
+        #print(resolution_peaks)
+        
 
         min_d2, max_d2 = self.read_resolution_ranges()
         #ratio=self.compare_mean(resolution_data,intensity_data,min_d2,max_d2)
 
         #detect ice-rings
         count = 0
-        for res in resolution_peaks:
-            for a, b in zip(min_d2, max_d2):
-                if res >= a and res <= b:
+        for res,prom,wid in zip(resolution_peaks,peak_dict['prominences'],peak_dict['widths']):
+            for min, max in zip(min_d2, max_d2):
+                if res >= min and res <= max:
                     count += 1
                     resolution_peaks_plt.append(res)
-            # if res>self.min_1st_ir and res<self.max_1st_ir:
-            #     count += 1
-            #     resolution_peaks_plt.append(res)
-            # if res>self.min_2nd_ir and res<self.max_2nd_ir:
-            #     count += 1
-            #     resolution_peaks_plt.append(res)
-            # if res>self.min_3rd_ir and res<self.max_3rd_ir:
-            #     count += 1
-            #     resolution_peaks_plt.append(res)
-        print("Number of found ice-rings:", count)
+    
+                    if min_d2.index(a)>1:
+                        prominences.append(prom)
+                        widths.append(wid)
+        if len(prominences)==0:  
+            for res,prom,wid in zip(resolution_peaks,peak_dict['prominences'],peak_dict['widths']):
+                for min, max in zip(min_d2, max_d2):
+                    if res >= min and res <= max:
+                        prominences.append(prom)
+                        widths.append(wid)
+        
+                
+                            
+                
+        print("Number of ice-rings found:", count)
         ice_ring = 0
 
         #decide if data set contains ice-rings
         if count >1:
             ice_ring=1
         
-        if ice_ring ==1:
-            print("The dataset contains ice-rings.")
-        else: 
-            print("The dataset does not contain ice-rings.")
+        
        
 
-        """
-        if resolution_data[-1]< self.max_2nd_ir:
-        #resolution data does not include the resolution greater 0.2
-            if count ==1:
-                print("The data set contains ice-rings.")
-                ice_ring = 1
-            else:
-                print("The data set does not contain ice-rings.")
+        #evaluate quality of the ice-rings
+        strength=0
+        peaked = 0
+        average_prom=(sum(prominences)/len(prominences))
+        average_width = (sum(widths)/len(widths))
 
-        elif resolution_data[-1]< self.max_3rd_ir:
-        #resolution data does not include resolution greater 0.2745
-            if count ==2:
-                print("The data set contains ice-rings.")
-                ice_ring = 1
-            else:
-                print("The data set does not contain ice-rings.")
+        if  average_prom>7:
+            strength=1
+            
+        if (average_prom/average_width)>0.5:
+                peaked=1
 
+        if strength ==0:
+            strength_string = 'weak'
+        else:
+            strength_string = 'strong'
+
+        if peaked ==0:
+            peaked_string = 'diffuse'
+
+        else:
+            peaked_string = 'sharp'
+
+
+        if ice_ring ==1:
+            print("The dataset contains ",strength_string,",",peaked_string,"ice-rings.")
         else: 
-            #resolution data includes resolution greater than 0.2745
-            if count == 3:
-                print("The data set contains ice-rings.") 
-                ice_ring = 1
-            else:
-                print("The data set does not contain ice-rings.")
-        """
+            print("The dataset does not contain ice-rings.")
+
         end =timer()
 
         print('Time taken:', end-start)
         
-        #variance over mean
-        # mean_data, variance_data, variance_mean_data = self.mean_variance(intensity_data)
-        # index1=bisect.bisect_right(resolution_data,0.0625)
-        # index2= bisect.bisect_left(resolution_data,0.29)
-        # def format_xticks(x, p):
-        #     if x <= 0:
-        #         return None
-        #     return "%.2f" % sqrt(1/x)
+       
 
-        # fig, ax = plt.subplots()
-        # ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
-        # plt.plot(resolution_data[index1:index2],variance_mean_data[index1:index2])
-        # for min,max in zip(min_d2,max_d2):
-        #     ax.axvspan(min, max, alpha=0.5, color='red')
-        # plt.xlim(resolution_data[index1],resolution_data[index2])
-        # plt.ylabel('variance/mean')
-        # plt.xlabel('Resolution')
-        # plt.title('variance/mean vs resolution')
-        # plt.show()
-
-
-
-        #plot data
+        #plot data and save plot
         if self.showPlot ==True:
             self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt,min_d2,max_d2)
         
-        return ice_ring, count
+        return ice_ring, count,strength, peaked
 
 def run():
     '''Allows ice_rings to be called from command line.'''
