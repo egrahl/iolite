@@ -13,27 +13,33 @@ from sklearn import preprocessing
 
 
 class IceRingClassifier:
-    """
-    This class takes resolution and intensity data from a .txt file and
+
+    '''
+    This class takes resolution and intensity data from a .txt file and 
     classifies the dataset whether it does contain ice-rings or not. 
-    """
+    '''
+    def __init__(self,filename,showPlot):
+        '''
+        The ice ring classifier is initialized with default settings
+        for the filename to open and the setting not to show and save a plot.
 
-    def __init__(self, filename, showPlot):
-        """The ice ring classifier is initialized with default settings for the filename to open and the setting not to show and save a plot.
+        :param str filename: name of file that contains the resolution and 
+                             intensity data (default= "table.txt")
+        :param bool showPlot: The boolean that determines if the data
+                              should be plotted. (default = False)
+        '''
 
-       
-        :param str filename: name of file that contains the resolution and intensity data (default= "table.txt")
-        :param bool showPlot: The boolean that determines if the data should be plotted. (default = False)
-        """
 
         self.inputFile = filename
         self.showPlot = showPlot
 
     def resolution_intensity_from_txt(self):
-        """Create a list of resolution data and intensity data from .txt file, respectively.
+        '''
+        Create a lists of resolution data and intensity data from .txt file.
+
         
         :returns: list of resolution data and list of intensity data
-        """
+        '''
 
         filein = open(self.inputFile, "r")
 
@@ -82,25 +88,33 @@ class IceRingClassifier:
 
         return resolution_peaks
 
-    def ice_ring_plot(self, resolution_data, intensity_data, res_line, min_d2, max_d2):
-        """Plots intensity data against resolution with vertical lines at resolution where an ice-ring was found and marked ranges 
-           where peaks corresponding to ice-rings can be detected, and saves plot to plot.png.
+
+    def ice_ring_plot(self, resolution_data,intensity_data,res_line,min_d2,max_d2):
+        '''
+        Plots intensity data against resolution with vertical lines at resolution
+        where an ice-ring was found and marked ranges where peaks corresponding 
+        to ice-rings can be detected, and saves plot to plot.png.
 
         :param list resolution_data: list of resolution data
         :param numpy array intensity_data: list of intensity data
-        :param list res_line: list containing resolutions at which ice-rings were found
-        :param list min_d2: list containing the minimum resolutions of the ranges where ice-rings can be detected
-        :param list max_d2: list containing the maximum resolutions of the ranges where ice-rings can be detected
-        """
+        :param list res_line: list containing resolutions at which 
+                              ice-rings were found
+        :param list min_d2: list containing the minimum resolutions 
+                            of the ranges where ice-rings can be detected
+        :param list max_d2: list containing the maximum resolutions
+                            of the ranges where ice-rings can be detected
+        '''
 
         def format_xticks(x, p):
             """Changes x axis to resolution in angstroms."""
             if x <= 0:
                 return " "
-            else:
-                return "%.2f" % sqrt(1 / x)
 
-        pdb_id = self.get_PDB_id()
+            else:    
+                return "%.2f" % sqrt(1/x)
+        
+        pdb_id= self.get_pdb_id()
+
         fig, ax = plt.subplots()
         ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
         plt.plot(resolution_data, intensity_data)
@@ -120,10 +134,13 @@ class IceRingClassifier:
         plt.show()
 
     def read_resolution_ranges(self):
-        """Reads resolution ranges where ice-rings can be detected from text file and creates lists containing the minima and maxima of these ranges.
+        '''
+        Reads resolution ranges where ice-rings can be detected from text file 
+        and creates lists containing the minima and maxima of these ranges.
 
-        :returns: list of minima of resolution ranges and list of maxima of resolution ranges
-        """
+        :returns: lists of minima and maxima of resolution ranges
+        '''
+
         min_d2 = []
         max_d2 = []
         for line in open(
@@ -134,8 +151,11 @@ class IceRingClassifier:
             max_d2.append(b)
         return min_d2, max_d2
 
-    def get_PDB_id(self):
-        """Reads PDB id of current dataset.
+
+
+    def get_pdb_id(self):
+        '''Reads PDB id of current dataset.
+
 
         :returns: PDB id
         """
@@ -146,29 +166,32 @@ class IceRingClassifier:
     def main(self):
         """The main function of ice_rings that classifies the data set. 
         
-        :returns: ice_ring(0 if no ice-rings are detected, 1 if they are), count (number of ice-rings detected), strength of ice rings, peaked 
-        """
+        :returns: boolean ice_ring, count (number of ice-rings detected), 
+                booleans strength of ice rings, peaked 
+        '''
+
         start = timer()
 
         # prepare data
         resolution_data, intensity_data = self.resolution_intensity_from_txt()
 
-        # scale intensity data to range 0 to 100
-        intensity_scaled = self.scale_intensity(intensity_data, 0, 100)
 
-        # detect the peaks in intensity
-        peaks, peak_dict = scipy.signal.find_peaks(
-            intensity_scaled[: (len(intensity_scaled) - 450)],
-            prominence=1.1,
-            rel_height=0.2,
-            width=1.5,
-        )
-        resolution_peaks = self.resolution_peak_list(peaks, resolution_data)
+        # scale intensity data to range 0 to 100 to make peak finding work
+        intensity_scaled = self.scale_intensity(intensity_data,0,100)
 
-        # create lists that will hold important data
-        resolution_peaks_plt = []
-        prominences = []
-        widths = []
+        
+        #detect the peaks in intensity
+
+        #last values of intensity list is ignored because of high noise
+        #other values have been determined to give best results
+        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)],prominence=1.1,rel_height=0.2, width= 1.5)  
+        resolution_peaks = self.resolution_peak_list(peaks,resolution_data)
+        
+        #create lists that will hold important data
+        resolution_peaks_plt =[]
+        prominences =[]
+        widths=[]
+
         min_d2, max_d2 = self.read_resolution_ranges()
 
         # detect ice-rings and qualitites of peaks
@@ -179,55 +202,64 @@ class IceRingClassifier:
             resolution_peaks, peak_dict["prominences"], peak_dict["widths"]
         ):
             for minimum, maximum in zip(min_d2, max_d2):
-                count_round += 1
+
+                count_round +=1
+
+                #detect ice-ring peak if it is in a resolution range where 
+                #ice-rings are expected
+
                 if res >= minimum and res <= maximum:
                     count_ir += 1
                     resolution_peaks_plt.append(res)
                     prominences.append(prom)
                     widths.append(wid)
-                    if count_round < 4: # Describe hard coded "magic" numbers
+
+
+                   """  track if there are peaks in any of the first 3 resolution ranges
+                    (peak finding algorithm had difficulties with choosing the right 
+                    prominences) """
+                    if count_round<4:
+
                         first_prom.append(prom)
             count_round = 0
 
-        # decide if data set contains ice-rings
-        ice_ring = 0
-        if count_ir > 1:
-            ice_ring = 1
+                 
+        #decide if data set contains ice-rings
+        ice_ring = (count_ir >1)
+     
+        
+        #evaluate quality of the ice-rings
 
-        # evaluate quality of the ice-rings
-        strength = 0
-        peaked = 0
+        if len(first_prom)>0:
+            """the peak with the largest prominence detected in the first 3 
+            resolution ranges will be excluded from the calculation of the
+            averages, as its determined prominence is not actually the 
+            prominence of the ice-ring peak (the background has typically a
+            higher intensity in that region, which can be interpreted as a
+             peak by the peak finding algorithm)"""
 
-        if len(first_prom) > 0:
-            max_prom = max(first_prom)
-
-            if len(prominences) > 1:
-                average_prom = (sum(prominences) - max_prom) / (len(prominences) - 1)
-                average_width = (sum(widths) - widths[prominences.index(max_prom)]) / (
-                    len(widths) - 1
-                )
-
-                if average_prom > 5:
-                    strength = 1
-                if (average_prom / average_width) > 0.5:
-                    peaked = 1
+            max_prom=max(first_prom)
+            if len(prominences)>1:
+                average_prom=((sum(prominences)-max_prom)/(len(prominences)-1))
+                average_width = ((sum(widths)-widths[prominences.index(max_prom)])/(len(widths)-1))
         else:
-            if len(prominences) > 1:
-                average_prom = sum(prominences) / len(prominences)
-                average_width = sum(widths) / len(widths)
+            if len(prominences)>0:
+                average_prom=(sum(prominences)/len(prominences))
+                average_width = (sum(widths)/len(widths))
+        
+        #values come from analysing previous data
+        strength= (average_prom>5)
+        peaked = ((average_prom/average_width)>0.5)
 
-                if average_prom > 5:
-                    strength = 1
-                if (average_prom / average_width) > 0.5:
-                    peaked = 1
+        if strength ==False:
+            strength_string = 'weak'
 
-        if strength == 0:
-            strength_string = "weak"
         else:
             strength_string = "strong"
 
-        if peaked == 0:
-            peaked_string = "diffuse"
+        if peaked ==False:
+            peaked_string = 'diffuse'
+
         else:
             peaked_string = "sharp"
 
@@ -243,8 +275,10 @@ class IceRingClassifier:
             )
         else:
             print("The dataset does not contain ice-rings.")
-            strength = 0
-            peaked = 0
+
+            strength=False
+            peaked=False
+
 
         end = timer()
 
@@ -257,6 +291,7 @@ class IceRingClassifier:
             )
 
         return ice_ring, count_ir, strength, peaked
+
 
 
 def run():
