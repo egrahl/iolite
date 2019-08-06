@@ -6,7 +6,8 @@ import numpy as np
 
 help_message = """
 
-This program masks the strong spots of an imageset, followed by averaging of the images and making a radial average over resolution shells.
+This program masks the strong spots of an imageset, followed by
+averaging of the images and making a radial average over resolution shells.
 
 
 """
@@ -48,7 +49,10 @@ phil_scope = parse(
 
 
 class Script:
-    '''This class masks the strong spots of an imageset, followed by averaging of the images and making a radial average over resolution shells.'''
+    '''
+    This class masks the strong spots of an imageset, followed by
+    averaging of the images and making a radial average over resolution shells.
+    '''
 
     def __init__(self):
         '''Initialise the script.'''
@@ -77,9 +81,12 @@ class Script:
 
 
     def summed_data_mask(self,imageset,scan_range,shoebox):
-        '''Create numpy array of summed data and summed mask of an imageset,respectively, including masking of strong spots. 
+        '''
+        Create numpy array of summed data and summed mask of an imageset,
+        respectively, including masking of strong spots. 
 
-        :param dxtbx_imageset_ext.ImageSweep imageset: imageset that contains the raw data
+        :param dxtbx_imageset_ext.ImageSweep imageset: imageset that
+         contains the raw data
         :param tuple scan_range: range of images in the imageset
         :param list shoebox: list of all shoeboxes found in the imageset
         :returns: numpy array summed_data and summed_mask
@@ -117,7 +124,7 @@ class Script:
 
             mask_array = ~mask_array
             mask_combined = np.logical_and(mask,mask_array).astype(np.int)
-
+            
 
             #apply mask on data and sum data and mask up
             temp = data * mask_combined
