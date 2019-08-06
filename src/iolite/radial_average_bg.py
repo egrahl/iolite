@@ -16,11 +16,11 @@ from libtbx.phil import parse
 
 phil_scope = parse(
     """
-  input {
-    filename_pickle = 'strong.pickle'
+  
+  filename_pickle = 'strong.pickle'
         .type = str
         .help = "The filename of the file containing information about strong spots."
-  }
+  
   output {
     filename = 'table.txt'
       .type = str
@@ -56,12 +56,12 @@ class Script:
         import libtbx.load_env
 
         # The script usage
-        usage = "usage: iolite.radial_average_bg [options] datablock.json"
+        usage = "usage: iolite.radial_average_bg [options] imported.expt"
 
         # Create the parser
         self.parser = OptionParser(
             usage=usage, phil=phil_scope, epilog=help_message, read_experiments=True)
-            
+
 
     def init_list_of_objects(self,size):
         ''' Create a list of empty lists of length size.
@@ -141,7 +141,8 @@ class Script:
 
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
-        experiments = flatten_experiments(params.input.experiments)   
+        experiments = flatten_experiments(params.input.experiments)
+        #experiments = ExperimentListFactory.from_json_file("11_refined_experiments.json")     
         if len(experiments) == 0:
             self.parser.print_help()
             return
@@ -150,7 +151,7 @@ class Script:
         imageset = experiments[0].imageset
         beam = experiments[0].beam
         detector = experiments[0].detector
-        reflections = flex.reflection_table.from_pickle(params.input.filename_pickle)
+        reflections = flex.reflection_table.from_pickle(params.filename_pickle)
         shoebox = reflections['shoebox']
 
         
@@ -182,7 +183,9 @@ class Script:
 
         #save average as .png file
         from matplotlib import pylab
+        pylab.imshow(average)
         pylab.imsave('average_data',average)
+        pylab.show()
         
 
         # Compute min and max and num
