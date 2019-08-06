@@ -154,7 +154,7 @@ class IceRingClassifier:
 
         
         #detect the peaks in intensity
-        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)],prominence=1.1,rel_height=0.2, width= 7485/len(resolution_data))  
+        peaks, peak_dict = scipy.signal.find_peaks(intensity_scaled[:(len(intensity_scaled)-450)],prominence=1.1,rel_height=0.2, width= 1.5)  
         resolution_peaks = self.resolution_peak_list(peaks,resolution_data)
         
         #create lists that will hold important data
@@ -165,40 +165,54 @@ class IceRingClassifier:
   
         
         #detect ice-rings and qualitites of peaks
-        count = 0
-        for res,prom,wid in zip(resolution_peaks,peak_dict['prominences'],peak_dict['widths']):
-            for min, max in zip(min_d2, max_d2):
-                if res >= min and res <= max:
-                    count += 1
+        count_ir = 0
+        count_round=0
+        first_prom=[]
+        for res,prom,wid in zip(resolution_peaks,peak_dict['prominences'],peak_dict['widths']):    
+            for minimum, maximum in zip(min_d2, max_d2):
+                count_round +=1
+                if res >= minimum and res <= maximum:
+                    count_ir += 1
                     resolution_peaks_plt.append(res)
-    
-                    if min_d2.index(min)>1:
-                        prominences.append(prom)
-                        widths.append(wid)
-        if len(prominences)==0:  
-            for res,prom,wid in zip(resolution_peaks,peak_dict['prominences'],peak_dict['widths']):
-                for min, max in zip(min_d2, max_d2):
-                    if res >= min and res <= max:
-                        prominences.append(prom)
-                        widths.append(wid)
+                    prominences.append(prom)
+                    widths.append(wid)
+                    if count_round<4:
+                        first_prom.append(prom)
+            count_round=0
 
+                 
         #decide if data set contains ice-rings
         ice_ring = 0
-        if count >1:
+        if count_ir >1:
             ice_ring=1
         
         #evaluate quality of the ice-rings
         strength=0
         peaked = 0
 
-        if len(prominences)>0:
-            average_prom=(sum(prominences)/len(prominences))
-            average_width = (sum(widths)/len(widths))
+        if len(first_prom)>0:
+            if len(first_prom)==1:
+                max_prom=first_prom[0]
+            else:
+                max_prom=max(first_prom)
 
-            if  average_prom>7:
-                strength=1   
-            if (average_prom/average_width)>0.5:
-                    peaked=1
+            if len(prominences)>1:
+                average_prom=((sum(prominences)-max_prom)/(len(prominences)-1))
+                average_width = ((sum(widths)-widths[prominences.index(max_prom)])/(len(widths)-1))
+
+                if  average_prom>5:
+                    strength=1   
+                if (average_prom/average_width)>0.5:
+                        peaked=1
+        else:
+            if len(prominences)>1:
+                average_prom=(sum(prominences)/len(prominences))
+                average_width = (sum(widths)/len(widths))
+
+                if  average_prom>5:
+                    strength=1   
+                if (average_prom/average_width)>0.5:
+                        peaked=1
 
         if strength ==0:
             strength_string = 'weak'
@@ -211,7 +225,7 @@ class IceRingClassifier:
             peaked_string = 'sharp'
 
         #print output
-        print("Number of ice-rings found:", count)
+        print("Number of ice-rings found:", count_ir)
         if ice_ring ==1:
             print("The dataset contains ",strength_string,",",peaked_string,"ice-rings.")
         else: 
@@ -222,14 +236,16 @@ class IceRingClassifier:
         end =timer()
 
         print('Time taken:', end-start)
-        
        
 
         #plot data and save plot
         if self.showPlot ==True:
             self.ice_ring_plot(resolution_data,intensity_scaled,resolution_peaks_plt,min_d2,max_d2)
         
-        return ice_ring, count,strength, peaked
+        return ice_ring, count_ir,strength, peaked
+
+
+        
 
 def run():
     '''Allows ice_rings to be called from command line.'''
