@@ -2,8 +2,11 @@ import os
 import os.path
 import matplotlib.pyplot as plt
 from math import sqrt
+
+
 def write_list_pdb_id():
-    '''Creates a list of pdb ids based on the PBD ids listed in the file pdb_id_list.txt (all pdb_ids).
+    '''Creates a list of pdb ids based on the PBD ids listed 
+    in the file pdb_id_list.txt (all pdb_ids).
 
     :returns: list_pdb_id
     '''
@@ -16,6 +19,7 @@ def write_list_pdb_id():
         else: list_pdb_id_d.append(line.rstrip())
     filein.close()
     list_pdb_id = list(set(list_pdb_id_d))
+    list_pdb_id.sort()
     return list_pdb_id
 
 
@@ -59,8 +63,15 @@ def read_sigma_from_txt(filename):
 
 
 def main():
-    no_bins=40           #int(sqrt(len(sigma_b)))
-    sigma_b, sigma_m = read_sigma_from_txt("sigma_values.txt")
+    pdb_id=write_list_pdb_id()
+    no_bins=120           #int(sqrt(len(sigma_b)))
+    sigma_b, sigma_m = write_list_sigma(pdb_id)
+
+    with open("pdb_id_sigma_values.txt", "w") as outfile:
+            for p,b, m in zip(pdb_id,sigma_b,sigma_m):
+                outfile.write("%s,   %f,   %f\n" % (p,b, m))
+    
+
     plt.hist(sigma_b, bins=no_bins)
     plt.title("Sigma b values")
     plt.show()
@@ -68,5 +79,6 @@ def main():
     plt.hist(sigma_m,bins=no_bins)
     plt.title("Sigma m values")
     plt.show()
+    
 if __name__ == "__main__":
     main()
