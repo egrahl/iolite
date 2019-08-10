@@ -68,21 +68,7 @@ def count_overlaps(shoebox,total_overlaps,num_bins, xy_list,index_list,x_dim,y_d
 
     return count_bg,count_fg,count_bg_fg
 
-def main():
-    start_main=timer()
-
-    experiments = ExperimentListFactory.from_json_file("13_integrated_experiments.json")
-    assert len(experiments) == 1
-    imageset = experiments[0].imageset
-    beam = experiments[0].beam
-    detector = experiments[0].detector  
-    panel = detector[0]
-
-    # get dimensions of the dataset
-    y_dim = imageset.get_raw_data(0)[0].all()[0]
-    x_dim = imageset.get_raw_data(0)[0].all()[1]
-    z_dim = len(imageset)
-    
+def lists_xy_resolution(x_dim,y_dim,panel,beam):
     resolution=[]
     
     xy_list=[]
@@ -92,11 +78,10 @@ def main():
             xy_list.append((x,y))
             d = panel.get_resolution_at_pixel(beam.get_s0(), (x,y))
             resolution.append((1/d**2))
-          
-    print("Read in resolutions.")       
-    vmin=min(resolution)
-    vmax=max(resolution)
-    num_bins=200
+    
+    return xy_list,resolution
+
+def prepare_bins(vmax, vmin, num_bins,resolution):
     d2_list=[]
     weight=[0]*num_bins
     index_list=[]
@@ -114,9 +99,73 @@ def main():
             index=int((d2-vmin-intervall/2)/intervall)
         index_list.append(index)
         
-        
         weight[index]+=1
+
+    return d2_list, index_list, weight 
+
+def find_shoeboxes_per_pixel(xy_list,z, coordinates, shoebox):
+    overlaps=[]
+    for xy in xy_list:
+        x=xy[0]
+        y=xy[1]
+        sboxes_at_pixel= [s for s,c in zip(shoebox,coordinates) if (x>=c[0])and (x<c[1])and (y>=c[2])and (y<c[3])and (z>=c[4])and (z<c[5])]
+        overlaps.append(sboxes_at_pixel)
     
+    return overlaps
+
+def specify_overlap(overlap, xy_list,z):
+    bg=[0]*len(overlap)
+    fg=[0]*len(overlap)
+    bg_fg=[0]*len(overlap)
+    for o,xy, b,f, bf in zip(overlap,xy_list,bg,fg,bg_fg):
+        num_sbox =len(o)
+        x= xy[0]
+        y=xy[1]
+        if num_sbox>1:
+            for sbox1 in o[:(num_sbox-1)]
+                index_a= o.index(sbox1)
+                for sbox2 in o[(index_a+1):]:
+                    mask1 = sbox1.mask.as_numpy_array()
+                    mask2 = sbox2.mask.as_numpy_array()
+                    intensity1= mask[(z-sbox1.bbox[4]),(y-sbox1.bbox[2]),(x-sbox1.bbox[0])]
+                    intensity2= mask[(z-sbox2.bbox[4]),(y-sbox2.bbox[2]),(x-sbox2.bbox[0])]
+
+                    if intensity_a== intensity_b ==3:
+                        b+=1
+                        
+                    elif intensity_a==intensity_b==5:
+                        f+=1
+                    else:
+                        bf+=1
+                        
+
+    return bg, fg, bg_fg
+
+def first_try():
+    start_main=timer()
+
+    experiments = ExperimentListFactory.from_json_file("13_integrated_experiments.json")
+    assert len(experiments) == 1
+    imageset = experiments[0].imageset
+    beam = experiments[0].beam
+    detector = experiments[0].detector  
+    panel = detector[0]
+
+    # get dimensions of the dataset
+    y_dim = imageset.get_raw_data(0)[0].all()[0]
+    x_dim = imageset.get_raw_data(0)[0].all()[1]
+    z_dim = len(imageset)
+    
+    xy_list, resolution = lists_xy_resolution(x_dim,y_dim,panel,beam)
+          
+    print("Read in resolutions.")    
+
+    vmin=min(resolution)
+    vmax=max(resolution)
+    num_bins=200
+
+    d2_list, index_list, weight = prepare_bins(vmax,vmin,num_bins,resolution)
+
     print("Prepared bins.")
     
     #n_pixels = y_dim*x_dim
@@ -192,6 +241,76 @@ def main():
     print("foreground overlap", sum(ratio_fg))
     print("background overlap", sum(ratio_bg))
     print("background foreground overlap", sum(ratio_total))
+
+def main():
+    start_main=timer()
+
+    experiments = ExperimentListFactory.from_json_file("13_integrated_experiments.json")
+    assert len(experiments) == 1
+    imageset = experiments[0].imageset
+    beam = experiments[0].beam
+    detector = experiments[0].detector  
+    panel = detector[0]
+
+    # get dimensions of the dataset
+    y_dim = imageset.get_raw_data(0)[0].all()[0]
+    x_dim = imageset.get_raw_data(0)[0].all()[1]
+    z_dim = len(imageset)
+
+    xy_list, resolution = lists_xy_resolution(x_dim,y_dim,panel,beam)
+          
+    print("Read in resolutions.")    
+
+    vmin=min(resolution)
+    vmax=max(resolution)
+    num_bins=200
+
+    d2_list, index_list, weight = prepare_bins(vmax,vmin,num_bins,resolution)
+
+    print("Prepared bins.")
+
+    for z in range(z_dim):
+        filename= "shoeboxes_"+str(z)+".pickle"
+        #get shoeboxes from pickle file
+        reflections = flex.reflection_table.from_pickle(filename)
+        shoebox = reflections["shoebox"]
+
+        #write list of coordinates of every shoebox
+        coordinates=[]
+      
+        for sbox in shoebox:
+            coordinates.append(sbox.bbox)
+        
+        #write a list which contains lists of shoeboxes at each pixel
+        overlaps=find_shoeboxes_per_pixel(xy_list,z,coordinates,shoebox)
+
+        #write lists containing count of overlaps(kind is specified) corresponding to every pixel 
+        bg_im,fg_im, bg_fg_im = specify_overlap(overlap,xy_list,z)
+
+        #bin the overlaps
+        bg_bin=[0]*len(d2_list)
+        fg_bin=[0]*len(d2_list)
+        bg_fg_bin=[0]*len(d2_list)
+
+        for b,f, bf, index in zip(bg_im, fg_im, bg_fg_im,index_list):
+            bg_bin[index]+=b
+            fg_bin[index]+=f
+            bg_fg_bin[index]+=bf
+
+        #calculate weighted lists
+        bg_w=[]
+        fg_w=[]
+        bg_fg_w=[]
+        for b,f,bf,w in zip(bg_bin,fg_bin,bg_fg_bin,weight):
+            bg_w.append(b/w)
+            fg_w.append(f/w)
+            bg_fg_w.append(bf/w)
+
+
+
+
+
+    
     
         
 
