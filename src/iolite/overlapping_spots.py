@@ -530,6 +530,147 @@ def third_try():
     # print("background overlap", sum(ratio_bg))
     # print("background foreground overlap", sum(ratio_total))
 
+def fourth_try():
+    start_main=timer()
+
+    experiments = ExperimentListFactory.from_json_file("13_integrated_experiments.json")
+    assert len(experiments) == 1
+    imageset = experiments[0].imageset
+    beam = experiments[0].beam
+    detector = experiments[0].detector  
+    panel = detector[0]
+
+    # get dimensions of the dataset
+    y_dim = imageset.get_raw_data(0)[0].all()[0]
+    x_dim = imageset.get_raw_data(0)[0].all()[1]
+    z_dim = len(imageset)
+
+    #write resolution array
+    resolution= np_resolution(x_dim,y_dim,panel,beam)      
+    print("Read in resolutions.")    
+
+    #get vmin, vmx and number of bins
+    vmin=np.amin(resolution)
+    
+    vmax=np.amax(resolution)
+    num_bins=50
+    
+    #get bin labels(middle of resolution range) array with size of image with 
+    #indices of bin the resolution is in and weight of each bin
+    d2_list, index_array, weight = np_prepare_bins(vmax,vmin,num_bins,resolution)
+    print("Prepared bins.")
+
+    print(weight)
+    #array of possible sums of the masks at one pixel
+    #row index = number of bg, column index=number of fg
+    outputs=np.array([[0,5,10,15,20,25,30],
+                    [3,8,13,18,23,28,0],
+                    [6,11,16,21,26,0,0],
+                    [9,14,19,24,0,0,0],
+                    [12,17,22,0,0,0,0]])
+
+    ratio_bg=[0]*num_bins
+    ratio_fg=[0]*num_bins
+    ratio_bg_fg=[0]*num_bins
+    ratio_total=[0]*num_bins
+
+    for z in range(z_dim):    #z_dim
+        start=timer()
+        filename= "shoeboxes_"+str(z)+".pickle"
+        #get shoeboxes from pickle file
+        reflections = flex.reflection_table.from_pickle(filename)
+        shoebox = reflections["shoebox"]
+        d = reflections['d']
+
+        # Get the bounding box overlaps
+        bbox_overlaps = reflections.find_overlaps()
+            
+        for edge in bbox_overlaps.edges():
+            index1 = bbox_overlaps.source(edge)
+            index2 = bbox_overlaps.target(edge)
+
+            bbox1 = shoebox[index1].bbox
+            bbox2 = shoebox[index2].bbox
+            mask1 = shoebox[index1].mask
+            mask2 = shoebox[index2].mask
+
+            x0 = max(bbox1[0], bbox2[0])        
+            x1 = min(bbox1[1], bbox2[1])        
+            y0 = max(bbox1[2], bbox2[2])        
+            y1 = min(bbox1[3], bbox2[3])        
+            assert x1 > x0
+            assert y1 > y0
+
+
+
+
+
+        mask_im, mask_count=sum_masks(shoebox,x_dim,y_dim,z)
+        y_round=0
+        x_round=0
+        count_bg=[0]*len(d2_list)
+        count_fg=[0]*len(d2_list)
+        count_bg_fg=[0]*len(d2_list)
+
+        for row_value,row_count in itertools.izip(mask_im,mask_count):
+            for value, count in itertools.izip(mask_im[row_value[0]],mask_count[row_count[0]]):
+                if value >5:
+                    
+                    if value==15 and count==5:
+                        count_bg[index_array[y_round,x_round]] +=10
+                    elif value==20 and count==6:
+                        count_bg[index_array[y_round,x_round]] +=10
+                        count_bg_fg[index_array[y_round,x_round]]+=5
+                    elif value==18 and count==6:
+                        count_bg[index_array[y_round,x_round]] +=15
+                    else:
+                        no_bg=np.where(outputs== value)[0][0]
+                        no_fg=np.where(outputs== value)[1][0]
+                        
+                        count_bg[index_array[y_round,x_round]]+= (no_bg*(no_bg-1)/2)
+                        count_fg[index_array[y_round,x_round]]+= (no_fg*(no_fg-1)/2)
+                        count_bg_fg[index_array[y_round,x_round]]+= no_bg*no_fg
+
+                
+            y_round+=1
+            x_round=0
+        
+        print(count_bg)
+        bg_ratio_im=[]
+        fg_ratio_im=[]
+        bg_fg_ratio_im= []
+        total_ratio_im=[]
+        round=0
+        for b,f,bf,w in zip(count_bg,count_fg,count_bg_fg,weight):
+            bg_ratio_im.append(b/w)
+            fg_ratio_im.append(f/w) 
+            bg_fg_ratio_im.append(bf/w)
+            total_ratio_im.append(b/w+f/w+bf/w)
+            ratio_bg[round]+= (b/w)
+            ratio_fg[round]+= (f/w)
+            ratio_bg_fg[round]+= (bf/w)
+            ratio_total[round]+= (b/w+f/w+bf/w)
+            round +=1
+        
+    
+        #print output
+        print("Image no.:",z)
+        print("No. of shoeboxes:", len(shoebox))
+        print("total count overlap ratio", (sum(count_bg)+sum(count_fg)+sum(count_bg_fg))/sum(weight))
+        print("foreground overlap ratio",   sum(count_fg)/sum(weight))
+        print("background overlap ratio",  sum(count_bg)/sum(weight))
+        print("background foreground overlap ratio",   sum(count_bg_fg)/sum(weight))
+
+        end=timer()
+        print("Time for image:", end-start)
+        #plot_bar_chart(d2_list,fg_ratio_im)
+
+    # print("Summed counts for the whole dataset:")
+    # print("total count overlap", sum(ratio_total))
+    # print("foreground overlap", sum(ratio_fg))
+    # print("background overlap", sum(ratio_bg))
+    # print("background foreground overlap", sum(ratio_total))
+
 
 def main():
     #first_try()
