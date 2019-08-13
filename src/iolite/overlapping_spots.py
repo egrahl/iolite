@@ -489,7 +489,7 @@ def third_try():
                         count_bg[index_array[y_round,x_round]]+= (no_bg*(no_bg-1)/2)
                         count_fg[index_array[y_round,x_round]]+= (no_fg*(no_fg-1)/2)
                         count_bg_fg[index_array[y_round,x_round]]+= no_bg*no_fg
-
+                x_round +=1
                 
             y_round+=1
             x_round=0
