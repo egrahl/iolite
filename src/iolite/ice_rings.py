@@ -156,15 +156,14 @@ class IceRingClassifier:
     def get_pdb_id(self):
         '''Reads PDB id of current dataset.
 
-
         :returns: PDB id
-        """
+        '''
         dirpath = os.getcwd()
         foldername = os.path.basename(dirpath)
         return foldername
 
     def main(self):
-        """The main function of ice_rings that classifies the data set. 
+        '''The main function of ice_rings that classifies the data set. 
         
         :returns: boolean ice_ring, count (number of ice-rings detected), 
                 booleans strength of ice rings, peaked 
