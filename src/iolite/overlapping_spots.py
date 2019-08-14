@@ -10,17 +10,19 @@ from dxtbx.model.experiment_list import ExperimentListFactory
 
 
 class OverlapCounter:
-''' A class that counts the overlaps of shoeboxes of spots on imagesets.'''
+    ''' A class that counts the overlaps of shoeboxes of spots on imagesets.'''
 
-    def __init__(self,filename):
-         '''
+    def __init__(self,filename,num_bins):
+        '''
         The overlap counter is initialized with default settings
         for the filename to open.
 
         :param str filename: name of json file that contains the reflection 
                              table (default= "13_integrated_experiments.json")
+        :param int num_bins: number of resolution bins (default:50)
         '''
         self.inputfile=filename
+        self.num_bins=num_bins
 
     def np_resolution(self,x_dim,y_dim,panel,beam):
         '''
@@ -147,8 +149,13 @@ class OverlapCounter:
         plt.show()
 
 
-    def main():
-        
+    def main(self):
+        '''The main function that counts the overlaps on an image dataset.
+
+        :returns: lists of binned average values overlaps per pixel and overall
+                  averages for the whole imageset
+
+        '''
         start_main=timer()
 
         #get input from json file
@@ -171,7 +178,7 @@ class OverlapCounter:
         #get vmin, vmx and number of bins
         vmin=np.amin(resolution)
         vmax=np.amax(resolution)
-        num_bins=50
+        num_bins=self.num_bins
         
         #get bin labels(middle of resolution range) array with size of image with 
         #indices of bin the resolution is in and weight of each bin
@@ -183,6 +190,7 @@ class OverlapCounter:
         count_bg_fg=[0]*num_bins
         count_total=[0]*num_bins
 
+        #loop through all images 
         for z in range(z_dim):    
             start=timer()
             filename= "shoeboxes_"+str(z)+".pickle"
@@ -267,6 +275,8 @@ class OverlapCounter:
 
         print("Time taken for dataset:", end_main-start_main)   
 
+        return ratio_total, ratio_bg,ratio_fg, ratio_bg_fg, ratio_total_dataset,ratio_bg_dataset, ratio_fg_dataset,ratio_bg_fg_dataset
+
 def run():
     """Allows overlapping_spots to be called from command line."""
     import argparse
@@ -280,9 +290,16 @@ def run():
         help="The name of the json file that contains the reflection table.",
         default="13_integrated_experiments.json",
     )
+    parser.add_argument(
+        "--num_bins",
+        dest="num_bins",
+        type=int,
+        help="The number of resolution bins",
+        default=50,
+    )
 
     args = parser.parse_args()
-    overlap_counter = OverlapCounter(args.filename)
+    overlap_counter = OverlapCounter(args.filename,args.num_bins)
     overlap_counter.main()
 
 
