@@ -1,7 +1,15 @@
+# coding: utf-8
 import os
 import os.path
 import matplotlib.pyplot as plt
 from math import sqrt
+import numpy as np
+import matplotlib
+
+
+matplotlib.rcParams['font.sans-serif'] = "Arial"
+# Then, "ALWAYS use sans-serif fonts"
+matplotlib.rcParams['font.family'] = "sans-serif"
 
 
 def write_list_pdb_id():
@@ -62,23 +70,44 @@ def read_sigma_from_txt(filename):
     return sigma_b, sigma_m
 
 
+
+def plot_histogram(sigma,no_bins,label):
+    plt.hist(sigma, bins=no_bins)
+    
+    plt.title('Histogram ' + label +' values',fontsize=18)
+    plt.xlabel(label+" (°)",fontsize=12)
+    plt.ylabel("Occurence",fontsize=1)
+    plt.show()
+
+def plot_boxplot(sigma,label):
+    plt.boxplot(sigma,labels=[label])
+    plt.title("Boxplot for distribution of " + label,fontsize=18)
+    plt.ylabel(label,fontsize=12)
+    plt.show()
+
+def border_values(sigma_list):
+    low=np.percentile(sigma_list,20)
+    medium=np.percentile(sigma_list,80)
+    
+    borders=[low,medium]
+    return borders
+
+
 def main():
-    pdb_id=write_list_pdb_id()
-    no_bins=120           #int(sqrt(len(sigma_b)))
-    sigma_b, sigma_m = write_list_sigma(pdb_id)
+    no_bins=50        
+    sigma_b, sigma_m = read_sigma_from_txt("/dls/mx-scratch/gwx73773/data_files/sigma_values.txt")
 
-    with open("pdb_id_sigma_values.txt", "w") as outfile:
-            for p,b, m in zip(pdb_id,sigma_b,sigma_m):
-                outfile.write("%s,   %f,   %f\n" % (p,b, m))
-    
 
-    plt.hist(sigma_b, bins=no_bins)
-    plt.title("Sigma b values")
-    plt.show()
+    #plot histograms
+    plot_histogram(sigma_b,no_bins,r'$\sigma_b$')
+    plot_histogram(sigma_m,no_bins,r'$\sigma_m$')
     
-    plt.hist(sigma_m,bins=no_bins)
-    plt.title("Sigma m values")
-    plt.show()
+    #plot boxplots
+    # plot_boxplot(sigma_b,r'$\sigma_b$')
+    # plot_boxplot(sigma_m,r'$\sigma_m$')
+
+    
+    
     
 if __name__ == "__main__":
     main()
