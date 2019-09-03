@@ -50,11 +50,10 @@ phil_scope = parse(
 
 class Script:
 
-    '''
+    """
     This class masks the strong spots of an imageset, followed by
     averaging of the images and making a radial average over resolution shells.
-    '''
-
+    """
 
     def __init__(self):
         """Initialise the script."""
@@ -81,9 +80,7 @@ class Script:
             list_of_objects.append(list())
         return list_of_objects
 
-
-
-    def summed_data_mask(self,imageset,scan_range,shoebox):
+    def summed_data_mask(self, imageset, scan_range, shoebox):
         """
         Create numpy array of summed data and summed mask of an imageset,
         respectively, including masking of strong spots. 
@@ -130,10 +127,9 @@ class Script:
 
             mask_array = ~mask_array
 
-            mask_combined = np.logical_and(mask,mask_array).astype(np.int)
-            
-
-            #apply mask on data and sum data and mask up
+            mask_combined = np.logical_and(mask, mask_array).astype(np.int)
+         
+            # apply mask on data and sum data and mask up
 
             temp = data * mask_combined
 
@@ -200,7 +196,6 @@ class Script:
         from matplotlib import pylab
 
         pylab.imshow(average)
-        pylab.imsave("average_data", average)
         pylab.show()
 
         # Compute min and max and num
