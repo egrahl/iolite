@@ -1,5 +1,6 @@
 from setuptools import setup
 
+
 def main():
     """
     setup the package
@@ -7,9 +8,13 @@ def main():
     """
     setup(
         packages=["src/iolite"],
-        scripts=["bin/radial_average_bg",
-                 "bin/ice_rings",
-                 "bin/overlapping_spots"],
+        scripts=[
+            "bin/radial_average_bg",
+            "bin/ice_rings",
+            "bin/classify_sigma",
+            "bin/classify_overlaps",
+            "bin/overlapping_spots",
+        ],
         install_requires=[],
         setup_requires=["pytest-runner"],
         tests_require=["pytest", "pytest-cov", "mock"],
