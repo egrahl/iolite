@@ -93,7 +93,7 @@ class SigmaClassifier:
 
         labels = [label_b,rank_b, label_m,rank_m]
         text = ["Classification of sigma b: ", "Rank of sigma b: ", "Classification of sigma m: ", "Rank of sigma m: "]
-        name_outfile=self.output_directory+"label_sigma.txt"
+        name_outfile=self.output_directory+"/label_sigma.txt"
         with open(name_outfile, "w") as outfile:
             for t, l in zip(text, labels):
                 outfile.write("%s %s\n" % (t, l))
