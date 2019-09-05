@@ -25,9 +25,9 @@ class SigmaClassifier:
     def extract_sigma_values(self, path):
         """
         This function extracts the sigma values from the dials.integrate.log 
-        file that is in the directiory.
+        file that is in the directory.
 
-        :param str path: path to the directiory containing the log file
+        :param str path: path to the directory containing the log file
 
         :returns: sigma_b and sigma_m
         """
@@ -106,7 +106,7 @@ class SigmaClassifier:
         values from the log file, classifies them and writes an
         output file with the labels.
 
-        :returns: label_b, rank_b,label_m,rank_m
+        :returns: list containing the classifications
         """
         path=self.input_directory
         sigma_b_list, sigma_m_list = read_sigma_from_txt(
@@ -114,10 +114,18 @@ class SigmaClassifier:
         )
        
         sigma_b, sigma_m = self.extract_sigma_values(path)
+
+        #classify sigma values
         label_b, rank_b = self.classify_sigma(sigma_b, sigma_b_list)
         label_m, rank_m = self.classify_sigma(sigma_m, sigma_m_list)
+        
+        #write output file
         self.write_output_file(label_b,rank_b,label_m,rank_m)
-        return label_b, rank_b, label_m, rank_m
+
+        #write classifications to list
+        data=[label_b,rank_b,label_m,rank_m]
+
+        return data
 
 
 def run():
