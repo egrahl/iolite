@@ -18,7 +18,7 @@ from libtbx.phil import parse
 phil_scope = parse(
     """
   
-  filename_pickle = 'strong.pickle'
+  filename_refl = 'strong.refl'
         .type = str
         .help = "The filename of the file containing information about strong spots."
   
@@ -127,6 +127,7 @@ class Script:
 
             mask_array = ~mask_array
 
+            #combine image mask and strong spot mak
             mask_combined = np.logical_and(mask, mask_array).astype(np.int)
          
             # apply mask on data and sum data and mask up
@@ -153,7 +154,7 @@ class Script:
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
         experiments = flatten_experiments(params.input.experiments)
-        # experiments = ExperimentListFactory.from_json_file("11_refined_experiments.json")
+      
         if len(experiments) == 0:
             self.parser.print_help()
             return
@@ -162,7 +163,7 @@ class Script:
         imageset = experiments[0].imageset
         beam = experiments[0].beam
         detector = experiments[0].detector
-        reflections = flex.reflection_table.from_pickle(params.filename_pickle)
+        reflections = flex.reflection_table.from_file(params.filename_refl) 
         shoebox = reflections["shoebox"]
 
         # Set the scan range
