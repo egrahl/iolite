@@ -193,11 +193,11 @@ class Script:
 
         average = medfilt(average)
 
-        # save average as .png file
-        from matplotlib import pylab
+        # plot average
+        # from matplotlib import pylab
 
-        pylab.imshow(average)
-        pylab.show()
+        # pylab.imshow(average)
+        # pylab.show()
 
         # Compute min and max and num
         if params.num_bins is None:
