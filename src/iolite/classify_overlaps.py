@@ -53,15 +53,15 @@ class OverlapClassifier:
         :param float rank_bg_fg: rank of background/foreground overlap
         """
 
-        labels=[label_t, label_fg,label_bg,label_bg_fg]
-        ranks=[rank_t,rank_fg,rank_bg,rank_bg_fg]
-        text=["Label/rank of total overlap: ", "Label/rank of foreground overlap: ",
-        "Label/rank of background overlap: ","Label/rank of background/foreground overlap: " ]
+        labels=[label_t,rank_t, label_fg,rank_fg,label_bg,rank_bg,label_bg_fg,rank_bg_fg]
+        
+        text=["Label total overlap: ","Rank total overlap: ", "Label foreground overlap: ","Rank foreground overlap: ",
+        "Label background overlap: ","Rank background overlap: ","Label background/foreground overlap: ","Rank background/foreground overlap: " ]
         out_name=self.output_directory+"/"+output_name
-        print(out_name)
+        
         with open(out_name, "w") as outfile:
-            for t,l,r in zip(text,labels,ranks):
-                outfile.write("%s, %s, %f\n" % (t,l,r))
+            for t,l in zip(text,labels):
+                outfile.write("%s %s\n" % (t,l))
 
     
     def write_overlap_lists_from_txt(self,filename):
@@ -111,6 +111,8 @@ class OverlapClassifier:
         """
         The main function of OverlapClassifier which labels and ranks the overlaps
         of the current dataset.
+
+        :returns: list containing the classifications
         """
         #decide which overlap kind will be classified
         if self.shoebox_count:
@@ -133,8 +135,13 @@ class OverlapClassifier:
         label_bg,rank_bg=self.classify_overlap(bg,bg_l)
         label_bg_fg,rank_bg_fg=self.classify_overlap(bg_fg,bg_fg_l)
 
+        #put data into list for return value
+        data=[label_total,rank_total,label_fg,rank_fg,label_bg,rank_bg,label_bg_fg,rank_bg_fg]
+
         #write output file
         self.write_output_file(output_name,label_total,rank_total,label_fg,rank_fg,label_bg, rank_bg, label_bg_fg,rank_bg_fg)
+
+        return data
 
     
 
