@@ -14,6 +14,7 @@ def main():
             "bin/classify_sigma",
             "bin/classify_overlaps",
             "bin/overlapping_spots",
+            "bin/label_dataset",
         ],
         install_requires=[],
         setup_requires=["pytest-runner"],
