@@ -1,0 +1,7 @@
+#!/bin/env/python3
+
+import sys
+from iolite import label_dataset
+
+if __name__ == '__main__':
+    label_dataset.run(sys.argv[1:])
