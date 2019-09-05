@@ -7,6 +7,7 @@ from matplotlib import pylab
 
 from dials.array_family import flex
 from dxtbx.model.experiment_list import ExperimentListFactory
+from dials.util.options import flatten_experiments
 
 
 class OverlapCounter:
@@ -22,8 +23,8 @@ class OverlapCounter:
         and the boolean that dicides whether the overlaps should be counted per 
         shoebox. 
 
-        :param str inputfile: name of json file that contains the reflection 
-                             table (default= "13_integrated_experiments.json")
+        :param str inputfile: name of expt file that contains the reflection 
+                             table (default= "13_integrated.expt")
         :param int num_bins: number of resolution bins (default:50)
         :param str outputfile_l: name of outputfile written containing overlaps 
                                 per resolution bin (default: overlap_lists)
@@ -389,7 +390,7 @@ class OverlapCounter:
         resolutions and a resolution list per pixel
 
         """
-        # get input from json file
+        # get input from expt file
         experiments = ExperimentListFactory.from_json_file(self.inputfile)
         assert len(experiments) == 1
         imageset = experiments[0].imageset
@@ -730,7 +731,7 @@ def run():
         dest="inputfile",
         type=str,
         help="The name of the json file that contains the reflection table.",
-        default="13_integrated_experiments.json",
+        default="13_integrated.expt",
     )
     parser.add_argument(
         "--num_bins",
