@@ -179,8 +179,6 @@ class IceRingClassifier:
         :param str peaked: labeling of the sharpness of the ice-rings
 
         """
-        
-        
         if ice_ring==False:
             strength="---"
             peaked="---"
@@ -323,14 +321,14 @@ class IceRingClassifier:
         print("Time taken:", end - start)
 
         #write label output file
-        self.write_label_file(ice_ring,ir_count,strength_string,peaked_string)
+        self.write_label_file(ice_ring,count_ir,strength_string,peaked_string)
 
         # plot data and save plot
         if self.showPlot == True:
             self.ice_ring_plot(
                 resolution_data, intensity_scaled, resolution_peaks_plt, min_d2, max_d2
             )
-
+        
         return ice_ring, count_ir, strength, peaked
 
 
