@@ -1,0 +1,7 @@
+#!/bin/env/python3
+
+import sys
+from iolite import classify_overlaps
+
+if __name__ == '__main__':
+    classify_overlaps.run(sys.argv[1:])

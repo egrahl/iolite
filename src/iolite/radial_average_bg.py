@@ -18,7 +18,7 @@ from libtbx.phil import parse
 phil_scope = parse(
     """
   
-  filename_pickle = 'strong.pickle'
+  filename_refl = 'strong.refl'
         .type = str
         .help = "The filename of the file containing information about strong spots."
   
@@ -44,17 +44,20 @@ phil_scope = parse(
     .type = float
     .help = "The low resolution limit"
 
+  plot = False
+        .type = bool
+        .help = "The boolean that determines if the average should be plotted."
+
 """
 )
 
 
 class Script:
 
-    '''
+    """
     This class masks the strong spots of an imageset, followed by
     averaging of the images and making a radial average over resolution shells.
-    '''
-
+    """
 
     def __init__(self):
         """Initialise the script."""
@@ -81,9 +84,7 @@ class Script:
             list_of_objects.append(list())
         return list_of_objects
 
-
-
-    def summed_data_mask(self,imageset,scan_range,shoebox):
+    def summed_data_mask(self, imageset, scan_range, shoebox):
         """
         Create numpy array of summed data and summed mask of an imageset,
         respectively, including masking of strong spots. 
@@ -130,11 +131,10 @@ class Script:
 
             mask_array = ~mask_array
 
-            mask_combined = np.logical_and(mask,mask_array).astype(np.int)
-            
+            #combine image mask and strong spot mak
+            mask_combined = np.logical_and(mask, mask_array).astype(np.int)
 
-            #apply mask on data and sum data and mask up
-
+            # apply mask on data and sum data and mask up
             temp = data * mask_combined
 
             if summed_data is None:
@@ -157,7 +157,7 @@ class Script:
         # Parse the command line
         params, options = self.parser.parse_args(show_diff_phil=False)
         experiments = flatten_experiments(params.input.experiments)
-        # experiments = ExperimentListFactory.from_json_file("11_refined_experiments.json")
+      
         if len(experiments) == 0:
             self.parser.print_help()
             return
@@ -166,7 +166,7 @@ class Script:
         imageset = experiments[0].imageset
         beam = experiments[0].beam
         detector = experiments[0].detector
-        reflections = flex.reflection_table.from_pickle(params.filename_pickle)
+        reflections = flex.reflection_table.from_file(params.filename_refl) 
         shoebox = reflections["shoebox"]
 
         # Set the scan range
@@ -196,12 +196,12 @@ class Script:
 
         average = medfilt(average)
 
-        # save average as .png file
-        from matplotlib import pylab
+        # plot average
+        if params.plot:
+            from matplotlib import pylab
 
-        pylab.imshow(average)
-        pylab.imsave("average_data", average)
-        pylab.show()
+            pylab.imshow(average)
+            pylab.show()
 
         # Compute min and max and num
         if params.num_bins is None:

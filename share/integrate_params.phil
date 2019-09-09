@@ -1,0 +1,6 @@
+integration {
+  
+  mp {
+    nproc=1
+  }
+}
