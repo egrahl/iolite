@@ -125,9 +125,9 @@ class IceRingClassifier:
         ax.xaxis.set_major_formatter(FuncFormatter(format_xticks))
         plt.plot(resolution_data, intensity_data)
 
-        # plot resolution ranges for ice-rings
+        #plot resolution ranges for ice-rings
         for min, max in zip(min_d2, max_d2):
-            ax.axvspan(min, max, alpha=0.4, color="whitesmoke")
+            ax.axvspan(min, max, alpha=0.4, color="yellow")
         # plot vertical lines where ice-rings were detected
         for res in res_line:
             plt.axvline(x=res, color="red")
@@ -346,11 +346,17 @@ def run():
         default="table.txt",
     )
     parser.add_argument(
-        "--showPlot",
+        "--showPlot_not",
         dest="showPlot",
         type=bool,
         help="The boolean that determines if the data should be plotted.",
         default=False,
+    )
+    parser.add_argument(
+        "--showPlot",
+        dest="showPlot",
+        help="Plots the ice-ring plot.",
+        action="store_true",
     )
 
     args = parser.parse_args()
