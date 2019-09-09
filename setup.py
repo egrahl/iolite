@@ -15,6 +15,9 @@ def main():
             "bin/classify_overlaps",
             "bin/overlapping_spots",
             "bin/label_dataset",
+            "bin/plot_results_overlaps",
+            "bin/sigma_values",
+            "bin/iolite_preparation"
         ],
         install_requires=[],
         setup_requires=["pytest-runner"],
