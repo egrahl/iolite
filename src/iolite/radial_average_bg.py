@@ -44,6 +44,10 @@ phil_scope = parse(
     .type = float
     .help = "The low resolution limit"
 
+  plot = False
+        .type = bool
+        .help = "The boolean that determines if the average should be plotted."
+
 """
 )
 
@@ -129,9 +133,8 @@ class Script:
 
             #combine image mask and strong spot mak
             mask_combined = np.logical_and(mask, mask_array).astype(np.int)
-         
-            # apply mask on data and sum data and mask up
 
+            # apply mask on data and sum data and mask up
             temp = data * mask_combined
 
             if summed_data is None:
@@ -194,10 +197,11 @@ class Script:
         average = medfilt(average)
 
         # plot average
-        # from matplotlib import pylab
+        if params.plot:
+            from matplotlib import pylab
 
-        # pylab.imshow(average)
-        # pylab.show()
+            pylab.imshow(average)
+            pylab.show()
 
         # Compute min and max and num
         if params.num_bins is None:
