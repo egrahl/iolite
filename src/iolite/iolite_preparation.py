@@ -1,5 +1,5 @@
 """
-run_iolite runs all programs of the software-package that are needed 
+iolite_preparation runs all programs of the software-package that are needed 
 for the classification of the datasets by label_dataset.py
 
 In order to run successfully, the dataset must consist of only one
@@ -27,7 +27,7 @@ def get_input_directories(source_directory_path,list_directories):
 
 def main(inputpath1,inputpath2):
     """
-    This is the main function of run_iolite in which all preparation
+    This is the main function of iolite_preparation in which all preparation
     programs necessary for the classification of the datasets are run.
 
     :param str inputpath1: path to first source-directory
@@ -86,7 +86,7 @@ def main(inputpath1,inputpath2):
 
 
 def run():
-    """Allows run_iolite to be called from command line."""
+    """Allows iolite_preparation to be called from command line."""
     import argparse
 
     parser = argparse.ArgumentParser(description="command line argument")
