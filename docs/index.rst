@@ -5,7 +5,8 @@
 
 iolite
 ==================================
-This software package 
+This software package can be used to classify X-ray diffraction datasets of macro-molecular crystallography
+with regards to the existence of ice-rings, overlapping spots and mosaicity.
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
