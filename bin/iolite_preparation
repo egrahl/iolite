@@ -1,0 +1,7 @@
+#!/bin/env/python3
+
+import sys
+from iolite import iolite_preparation
+
+if __name__ == '__main__':
+    iolite_preparation.run(sys.argv[1:])
