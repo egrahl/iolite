@@ -41,7 +41,7 @@ def list_from_txt(name):
 
 def main():
     """
-    The main function of test_ice_rings.py.
+    The main function of ice_ring_classifier_test.py.
     """
     #get list of pdb ids from txt file 
     list_pdb_id = list_from_txt("data_sets.txt")
