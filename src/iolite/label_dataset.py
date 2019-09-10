@@ -229,7 +229,7 @@ def run():
     parser.add_argument(
         "--single_dataset",
         dest="multiple_datasets",
-        help="Sets shoebox_count to false.",
+        help="Sets multiple_datasets to false.",
         action='store_false',
     )
     args = parser.parse_args()
