@@ -54,6 +54,22 @@ From this directory one can run iolite_preparation with up to 2 input directorie
 
     iolite.iolite_preparation --input1=/path/to/first/input/directory --input2=/path/to/second/input/directory
 
+iolite_preparation will run all necessary modules for each dataset in the input directories so that they can then be classified.
+The classification of the datasets can be done by running label_dataset:
+
+.. code-block:: bash
+
+    iolite.label_dataset 
+
+This will result in the creation of the fllowing text files in the working directory:
+
+    * table_ice_ring_classification.text
+    * table_overlap_pixel_classification.txt
+    * table_overlap_reflection_classification.txt
+    * table_sigma_classification.txt
+
+ 
+
 Ice-rings
 ---------
 In order to classify a dataset whether it has ice-rings or not, the data needs to be imported from the source directory with dials.
@@ -62,6 +78,10 @@ In order to classify a dataset whether it has ice-rings or not, the data needs t
 
     dials.import *
 
+
+Documentation of ice_rings
+.. currentmodule:: ice_rings
+.. autoclass:: IceRingClassifier
 
 API documentation
 -----------------
