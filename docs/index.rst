@@ -38,6 +38,7 @@ How to use
 ==========
 
 iolite can either process multiple datasets of a given directory at once, but its modules can also be run individually on one dataset.
+However, at the current stage, it can only succesfully run if the given image data is from one sweep.
 
 Running multiple datasets at once
 ---------------------------------
@@ -59,7 +60,7 @@ The classification of the datasets can be done by running label_dataset:
 
 .. code-block:: bash
 
-    iolite.label_dataset 
+    label_dataset 
 
 This will result in the creation of the following text files in the working directory:
 
@@ -78,14 +79,51 @@ Each table will consist of a column for the PDB id of the dataset. The other col
 
     * table_overlap_pixel_classification.txt:
         * **total(pixel)** : label of total overlap per pixel (*low*, *medium* or *high*)
-        * **Rank total(pixel)** :
+        * **Rank total(pixel)** : percentile rank of total overlap in reference distribution
+        * **fg(pixel)** : label of foreground overlap per pixel (*low*, *medium* or *high*)
+        * **Rank fg(pixel)** : percentile rank of foreground overlap in reference distribution
+        * **bg(pixel)** : label of background overlap per pixel (*low*, *medium* or *high*)
+        * **Rank bg(pixel)** : percentile rank of background overlap in reference distribution
+        * **bg/fg(pixel)** : label of background/foreground overlap per pixel (*low*, *medium* or *high*)
+        * **Rank bg/fg(pixel)** : percentile rank of background/foreground overlap in reference distribution        
+
     * table_overlap_reflection_classification.txt:
-        *
+        * **total(refl.)** : label of total overlap per reflection (*low*, *medium* or *high*)
+        * **Rank total(refl.)** : percentile rank of total overlap in reference distribution
+        * **fg(refl.)** : label of foreground overlap per reflection (*low*, *medium* or *high*)
+        * **Rank fg(refl.)** : percentile rank of foreground overlap in reference distribution
+        * **bg(refl.)** : label of background overlap per reflection (*low*, *medium* or *high*)
+        * **Rank bg(refl.)** : percentile rank of background overlap in reference distribution
+        * **bg/fg(refl.)** : label of background/foreground overlap per reflection (*low*, *medium* or *high*)
+        * **Rank bg/fg(refl.)** : percentile rank of background/foreground overlap in reference distribution      
+
     * table_sigma_classification.txt:
-        *
+        * **sigma b** : label of sigma b (*low*, *medium* or *high*)
+        * **Rank sigma b** : percentile rank of the sigma b value in reference distribution
+        * **sigma m** : label of sigma m (*low*, *medium* or *high*)
+        * **Rank sigma m** : percentile rank of the sigma m value in reference distribution
+
+Additionally, in every directory of the datasets there will be text files created containing the labels for the 
+dataset. The names of the text files are the following:
+    * label_ice_rings.txt
+    * label_overlap_pixel.txt
+    * label_overlap_shoebox.txt
+    * label_sigma.txt
+
+
+Processing of one dataset
+-------------------------
+
+The program requires dials. Therefore, one should run:
+
+.. code-block:: bash
+
+    module load dials/latest
+
+Now one can run the preparation modules. 
 
 Ice-rings
----------
+^^^^^^^^^
 In order to classify a dataset whether it has ice-rings or not, the data needs to be imported from the source directory with dials.
 
 .. code-block:: bash
