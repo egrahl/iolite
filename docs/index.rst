@@ -63,7 +63,7 @@ The classification of the datasets can be done by running label_dataset:
 
 This will result in the creation of the fllowing text files in the working directory:
 
-    * table_ice_ring_classification.text
+    * table_ice_ring_classification.txt
     * table_overlap_pixel_classification.txt
     * table_overlap_reflection_classification.txt
     * table_sigma_classification.txt
@@ -80,6 +80,7 @@ In order to classify a dataset whether it has ice-rings or not, the data needs t
 
 
 Documentation of ice_rings
+
 .. currentmodule:: ice_rings
 .. autoclass:: IceRingClassifier
 
