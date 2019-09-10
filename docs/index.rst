@@ -6,7 +6,9 @@
 iolite
 ==================================
 This software package can be used to classify X-ray diffraction datasets of macro-molecular crystallography
-with regards to the existence of ice-rings, overlapping spots and mosaicity. 
+with regards to the existence of ice-rings, overlapping spots and mosaicity.
+
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
@@ -30,6 +32,18 @@ To run the tests, download the source code and do the following:
 .. code-block:: bash
 
     python setup.py test
+
+
+How to use
+==========
+
+Ice-rings
+---------
+In order to classify a dataset whether it has ice-rings or not, the data needs to be imported from the source directory with dials.
+
+.. code-block:: bash
+
+    dials.import *
 
 
 API documentation
