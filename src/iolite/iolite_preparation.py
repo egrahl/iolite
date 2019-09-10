@@ -60,19 +60,19 @@ def main(inputpath1,inputpath2):
 
         #run preparation for ice_rings.py
         os.system(
-            "chmod +x /dls/science/users/gwx73773/iolite/src/iolite/run_prep_for_ice_rings.sh"
+            "chmod +x /dls/science/users/gwx73773/iolite/src/iolite/command_line/run_prep_for_ice_rings.sh"
         )
         os.system(
-           "qsub -q low.q /dls/science/users/gwx73773/iolite/src/iolite/run_prep_for_ice_rings.sh "+image_dir_path
+           "qsub -q low.q /dls/science/users/gwx73773/iolite/src/iolite/command_line/run_prep_for_ice_rings.sh "+image_dir_path
         )
         print("submitted " +id)
 
         #run preparation for overlapping spots and sigma_values
         os.system(
-            "chmod +x /dls/science/users/gwx73773/iolite/src/iolite/run_prep_overlaps_sigma.sh"
+            "chmod +x /dls/science/users/gwx73773/iolite/src/iolite/command_line/run_prep_overlaps_sigma.sh"
         )
         os.system(
-            "qsub -q low.q /dls/science/users/gwx73773/iolite/src/iolite/run_prep_overlaps_sigma.sh "+id + inputpath1 + inputpath2
+            "qsub -q low.q /dls/science/users/gwx73773/iolite/src/iolite/command_line/run_prep_overlaps_sigma.sh "+id + inputpath1 + inputpath2
         )
         print("Submitted "+id)
     
