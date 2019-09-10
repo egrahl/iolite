@@ -52,7 +52,7 @@ From this directory one can run iolite_preparation with up to 2 input directorie
 
 .. code-block:: bash
 
-    iolite.iolite_preparation --input1=/path/to/first/input/directory --input2=/path/to/second/input/directory
+    iolite_preparation --input1=/path/to/first/input/directory --input2=/path/to/second/input/directory
 
 iolite_preparation will run all necessary modules for each dataset in the input directories so that they can then be classified.
 The classification of the datasets can be done by running label_dataset:

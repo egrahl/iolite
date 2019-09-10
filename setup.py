@@ -7,7 +7,12 @@ def main():
 
     """
     setup(
-        packages=["src/iolite"],
+        packages=["src/iolite",
+                   "src/iolite/classification",
+                   "src/iolite/command_line",
+                   "src/iolite/ice_ring",
+                   "src/iolite/overlaps",
+                   "src/iolite/sigma_values"],
         scripts=[
             "bin/radial_average_bg",
             "bin/ice_rings",
