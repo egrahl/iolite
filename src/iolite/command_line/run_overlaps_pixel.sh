@@ -2,4 +2,4 @@
 
 module load dials/latest
 
-dials.python /dls/science/users/gwx73773/iolite/src/iolite/overlapping_spots.py --run_pixel
+dials.python /dls/science/users/gwx73773/iolite/src/iolite/overlaps/overlapping_spots.py --run_pixel
