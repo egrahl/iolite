@@ -1,9 +1,10 @@
 """
-This program was used to optimize the parameters of the peak finding 
-algorithm. The program ice-rings.py was run on 148 datasets (list of datasets in 
-"data_sets.txt") which were labelled before by looking at the images. These
-correct labels were saved in a file "ice_ring_present.txt"(the order of the labels
-(0 for no ice-rings, one for ice-rings) is the same like the order of the pdb_ids in
+The program ice_ring_classifier_test was used to optimize the parameters
+of the peak finding algorithm. The program ice-rings.py was run on 148 
+datasets (list of datasets in "data_sets.txt") which were labelled before by
+looking at the images. These correct labels were saved in a file
+"ice_ring_present.txt"(the order of the labels(0 for no ice-rings, 
+one for ice-rings) is the same like the order of the pdb_ids in
 "data_sets.txt", so the label refers to the correct dataset). The correct labels
 and the labels given by ice_rings.py are saved to an output text file.  
 
