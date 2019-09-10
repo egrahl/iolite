@@ -1,9 +1,9 @@
 import os
 from os.path import basename
 from prettytable import PrettyTable
-from iolite.classification.classify_sigma import SigmaClassifier
-from iolite.classification.classify_overlaps import OverlapClassifier
-from iolite.ice_ring.ice_rings import IceRingClassifier
+from classification.classify_sigma import SigmaClassifier
+from classification.classify_overlaps import OverlapClassifier
+from ice_ring.ice_rings import IceRingClassifier
 
 class DatasetLabeller:
     """This class labels datasets with regard to ice-rings, overlapping

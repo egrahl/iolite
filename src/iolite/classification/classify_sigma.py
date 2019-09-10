@@ -1,6 +1,6 @@
 import os
 import os.path
-from iolite.sigma_values.sigma_values import read_sigma_from_txt
+from sigma_values.sigma_values import read_sigma_from_txt
 import scipy
 import scipy.stats
 from scipy.stats import percentileofscore
