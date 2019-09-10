@@ -1,9 +1,9 @@
 import os
 from os.path import basename
 from prettytable import PrettyTable
-from classify_sigma import SigmaClassifier
-from classify_overlaps import OverlapClassifier
-from ice_rings import IceRingClassifier
+from classification.classify_sigma import SigmaClassifier
+from classification.classify_overlaps import OverlapClassifier
+from ice_ring.ice_rings import IceRingClassifier
 
 class DatasetLabeller:
     """This class labels datasets with regard to ice-rings, overlapping
@@ -229,7 +229,7 @@ def run():
     parser.add_argument(
         "--single_dataset",
         dest="multiple_datasets",
-        help="Sets shoebox_count to false.",
+        help="Sets multiple_datasets to false.",
         action='store_false',
     )
     args = parser.parse_args()

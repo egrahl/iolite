@@ -1,7 +1,7 @@
 #!/bin/env/python3
 
 import sys
-from iolite import plot_results_overlaps
+from iolite.overlaps import plot_results_overlaps
 
 if __name__ == '__main__':
     plot_results_overlaps.run(sys.argv[1:])

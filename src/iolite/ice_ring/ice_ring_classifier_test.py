@@ -13,7 +13,7 @@ import os
 import os.path
 import numpy as np
 
-from ice_rings import IceRingClassifier
+from ice_ring.ice_rings import IceRingClassifier
 
 
 def list_from_txt(name):
