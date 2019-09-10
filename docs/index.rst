@@ -61,14 +61,27 @@ The classification of the datasets can be done by running label_dataset:
 
     iolite.label_dataset 
 
-This will result in the creation of the fllowing text files in the working directory:
+This will result in the creation of the following text files in the working directory:
 
     * table_ice_ring_classification.txt
     * table_overlap_pixel_classification.txt
     * table_overlap_reflection_classification.txt
     * table_sigma_classification.txt
 
- 
+Each table will consist of a column for the PDB id of the dataset. The other columns are the following:
+
+    * table_ice_ring_classification.txt:
+        * Ice-rings: *y*(ice-rings are present) or *n*(no ice-rings present) 
+        * No. ice-rings: number of found ice-rings
+        * Strength: *strong* or *weak*
+        * Sharpness: *sharp* or *diffuse*
+
+    * table_overlap_pixel_classification.txt:
+        *
+    * table_overlap_reflection_classification.txt:
+        *
+    * table_sigma_classification.txt:
+        *
 
 Ice-rings
 ---------
@@ -81,7 +94,7 @@ In order to classify a dataset whether it has ice-rings or not, the data needs t
 
 Documentation of ice_rings
 
-.. currentmodule:: ice_ring.ice_rings
+.. currentmodule:: ice_rings
 .. autoclass:: IceRingClassifier
 
 API documentation
