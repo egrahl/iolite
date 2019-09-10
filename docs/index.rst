@@ -81,7 +81,7 @@ In order to classify a dataset whether it has ice-rings or not, the data needs t
 
 Documentation of ice_rings
 
-.. currentmodule:: ice_rings
+.. currentmodule:: iolite.ice_ring.ice_rings
 .. autoclass:: IceRingClassifier
 
 API documentation
