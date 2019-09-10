@@ -276,7 +276,7 @@ def plot_overall_results(overlap_kind):
     if overlap_kind:
         filename = "count_overlaps_pixel.txt"
     else:
-        filename = "count_overlaps_shoeboxes.txt"
+        filename = "count_overlaps_shoebox.txt"
     
     #get the data of the overlaps from a txt file
     total, fg, bg, bg_fg = read_lists_total(filename)

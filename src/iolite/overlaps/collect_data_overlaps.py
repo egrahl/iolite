@@ -68,7 +68,7 @@ def put_data_overlap_in_file(pdb_id_l,inputfile,outputfile):
     fg_ratio = []
     bg_ratio = []
     bg_fg_ratio = []
-
+    pdb_id_l_output=[]
     #loop through the datasets
     for id in pdb_id_l:
         #make sure inputfile exists
@@ -77,7 +77,7 @@ def put_data_overlap_in_file(pdb_id_l,inputfile,outputfile):
                 os.path.join(path, id, "DEFAULT/NATIVE/SWEEP1/integrate")
             ):
                 if file == inputfile:
-                
+                    pdb_id_l_output.append(id)
                     dest_path = os.path.join(path, id, "DEFAULT/NATIVE/SWEEP1/integrate")
                     os.chdir(dest_path)
                     filein = open(file, "r")
@@ -105,7 +105,7 @@ def put_data_overlap_in_file(pdb_id_l,inputfile,outputfile):
     #write output file
     with open(outputfile, "w") as outfile:
         for id, t, f, b, bf in zip(
-            pdb_id_l, total_ratio, fg_ratio, bg_ratio, bg_fg_ratio
+            pdb_id_l_output, total_ratio, fg_ratio, bg_ratio, bg_fg_ratio
         ):
             outfile.write("%s, %f, %f, %f, %f\n" % (id, t, f, b, bf))
 
