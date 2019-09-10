@@ -71,7 +71,7 @@ This will result in the creation of the following text files in the working dire
 Each table will consist of a column for the PDB id of the dataset. The other columns are the following:
 
     * table_ice_ring_classification.txt:
-        * Ice-rings: *y*(ice-rings are present) or *n*(no ice-rings present) 
+        * **Ice-rings** : *y* (ice-rings are present) or *n* (no ice-rings present) 
         * No. ice-rings: number of found ice-rings
         * Strength: *strong* or *weak*
         * Sharpness: *sharp* or *diffuse*
