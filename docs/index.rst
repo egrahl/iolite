@@ -72,12 +72,13 @@ Each table will consist of a column for the PDB id of the dataset. The other col
 
     * table_ice_ring_classification.txt:
         * **Ice-rings** : *y* (ice-rings are present) or *n* (no ice-rings present) 
-        * No. ice-rings: number of found ice-rings
-        * Strength: *strong* or *weak*
-        * Sharpness: *sharp* or *diffuse*
+        * **No. ice-rings** : number of found ice-rings
+        * **Strength** : *strong* or *weak*
+        * **Sharpness** : *sharp* or *diffuse*
 
     * table_overlap_pixel_classification.txt:
-        *
+        * **total(pixel)** : label of total overlap per pixel (*low*, *medium* or *high*)
+        * **Rank total(pixel)** :
     * table_overlap_reflection_classification.txt:
         *
     * table_sigma_classification.txt:
