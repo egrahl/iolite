@@ -139,6 +139,7 @@ This should write an output file *imported.expt*. The next step is to find the s
 This will write a file *strong.refl* into your working directory and will contain the reflection table.
 
 With that you can now run radial_average_bg.py. 
+
 .. warning::
     The program can only run successfully if you use dials.python!
 
