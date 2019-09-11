@@ -64,51 +64,51 @@ The classification of the datasets can be done by running label_dataset:
 
 This will result in the creation of the following text files in the working directory:
 
-    * table_ice_ring_classification.txt
-    * table_overlap_pixel_classification.txt
-    * table_overlap_reflection_classification.txt
-    * table_sigma_classification.txt
+* table_ice_ring_classification.txt
+* table_overlap_pixel_classification.txt
+* table_overlap_reflection_classification.txt
+* table_sigma_classification.txt
 
 Each table will consist of a column for the PDB id of the dataset. The other columns are the following:
 
-    * table_ice_ring_classification.txt:
-        * **Ice-rings** : *y* (ice-rings are present) or *n* (no ice-rings present) 
-        * **No. ice-rings** : number of found ice-rings
-        * **Strength** : *strong* or *weak*
-        * **Sharpness** : *sharp* or *diffuse*
+* table_ice_ring_classification.txt:
+    * **Ice-rings** : *y* (ice-rings are present) or *n* (no ice-rings present) 
+    * **No. ice-rings** : number of found ice-rings
+    * **Strength** : *strong* or *weak*
+    * **Sharpness** : *sharp* or *diffuse*
 
-    * table_overlap_pixel_classification.txt:
-        * **total(pixel)** : label of total overlap per pixel (*low*, *medium* or *high*)
-        * **Rank total(pixel)** : percentile rank of total overlap in reference distribution
-        * **fg(pixel)** : label of foreground overlap per pixel (*low*, *medium* or *high*)
-        * **Rank fg(pixel)** : percentile rank of foreground overlap in reference distribution
-        * **bg(pixel)** : label of background overlap per pixel (*low*, *medium* or *high*)
-        * **Rank bg(pixel)** : percentile rank of background overlap in reference distribution
-        * **bg/fg(pixel)** : label of background/foreground overlap per pixel (*low*, *medium* or *high*)
-        * **Rank bg/fg(pixel)** : percentile rank of background/foreground overlap in reference distribution        
+* table_overlap_pixel_classification.txt:
+    * **total(pixel)** : label of total overlap per pixel (*low*, *medium* or *high*)
+    * **Rank total(pixel)** : percentile rank of total overlap in reference distribution
+    * **fg(pixel)** : label of foreground overlap per pixel (*low*, *medium* or *high*)
+    * **Rank fg(pixel)** : percentile rank of foreground overlap in reference distribution
+    * **bg(pixel)** : label of background overlap per pixel (*low*, *medium* or *high*)
+    * **Rank bg(pixel)** : percentile rank of background overlap in reference distribution
+    * **bg/fg(pixel)** : label of background/foreground overlap per pixel (*low*, *medium* or *high*)
+    * **Rank bg/fg(pixel)** : percentile rank of background/foreground overlap in reference distribution        
 
-    * table_overlap_reflection_classification.txt:
-        * **total(refl.)** : label of total overlap per reflection (*low*, *medium* or *high*)
-        * **Rank total(refl.)** : percentile rank of total overlap in reference distribution
-        * **fg(refl.)** : label of foreground overlap per reflection (*low*, *medium* or *high*)
-        * **Rank fg(refl.)** : percentile rank of foreground overlap in reference distribution
-        * **bg(refl.)** : label of background overlap per reflection (*low*, *medium* or *high*)
-        * **Rank bg(refl.)** : percentile rank of background overlap in reference distribution
-        * **bg/fg(refl.)** : label of background/foreground overlap per reflection (*low*, *medium* or *high*)
-        * **Rank bg/fg(refl.)** : percentile rank of background/foreground overlap in reference distribution      
+* table_overlap_reflection_classification.txt:
+    * **total(refl.)** : label of total overlap per reflection (*low*, *medium* or *high*)
+    * **Rank total(refl.)** : percentile rank of total overlap in reference distribution
+    * **fg(refl.)** : label of foreground overlap per reflection (*low*, *medium* or *high*)
+    * **Rank fg(refl.)** : percentile rank of foreground overlap in reference distribution
+    * **bg(refl.)** : label of background overlap per reflection (*low*, *medium* or *high*)
+    * **Rank bg(refl.)** : percentile rank of background overlap in reference distribution
+    * **bg/fg(refl.)** : label of background/foreground overlap per reflection (*low*, *medium* or *high*)
+    * **Rank bg/fg(refl.)** : percentile rank of background/foreground overlap in reference distribution      
 
-    * table_sigma_classification.txt:
-        * **sigma b** : label of sigma b (*low*, *medium* or *high*)
-        * **Rank sigma b** : percentile rank of the sigma b value in reference distribution
-        * **sigma m** : label of sigma m (*low*, *medium* or *high*)
-        * **Rank sigma m** : percentile rank of the sigma m value in reference distribution
+* table_sigma_classification.txt:
+    * **sigma b** : label of sigma b (*low*, *medium* or *high*)
+    * **Rank sigma b** : percentile rank of the sigma b value in reference distribution
+    * **sigma m** : label of sigma m (*low*, *medium* or *high*)
+    * **Rank sigma m** : percentile rank of the sigma m value in reference distribution
 
 Additionally, in every directory of the datasets there will be text files created containing the labels for the 
 dataset. The names of the text files are the following:
-    * label_ice_rings.txt
-    * label_overlap_pixel.txt
-    * label_overlap_shoebox.txt
-    * label_sigma.txt
+* label_ice_rings.txt
+* label_overlap_pixel.txt
+* label_overlap_shoebox.txt
+* label_sigma.txt
 
 
 Processing of one dataset
@@ -203,17 +203,17 @@ Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run
     This will write two output files:
 
     1. **overlap_total_shoebox.txt**
-    This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
+        This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
     2. **overlap_lists_shoebox.txt**
-    This file contains the columns (in order):
-    
-    * average resolution of resolution bin
-    * total overlap (considering foreground/background overlap) ratio of resolution bin
-    * total overlap (considering background/foreground overlap) ratio of resolution bin
-    * foreground overlap ratio of resolution bin
-    * background overlap ratio of resolution bin
-    * foreground/background overlap ratio of resolution bin
-    * background/foreground overlap ratio of resolution bin
+        This file contains the columns (in order):
+
+        * average resolution of resolution bin
+        * total overlap (considering foreground/background overlap) ratio of resolution bin
+        * total overlap (considering background/foreground overlap) ratio of resolution bin
+        * foreground overlap ratio of resolution bin
+        * background overlap ratio of resolution bin
+        * foreground/background overlap ratio of resolution bin
+        * background/foreground overlap ratio of resolution bin
 
 Labelling of the dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^
