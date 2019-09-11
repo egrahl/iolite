@@ -200,17 +200,18 @@ Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run
         dials.python /PATH/TO/IOLITE/iolite/src/iolite/overlaps/overlapping spots.py 
 
     This will write two output files:
+
     1. **overlap_total_shoebox.txt**
-            This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
+    This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
     2. **overlap_lists_shoebox.txt**
-        This file contains the columns (in order):
-        * average resolution of resolution bin
-        * total overlap (considering foreground/background overlap) ratio of resolution bin
-        * total overlap (considering background/foreground overlap) ratio of resolution bin
-        * foreground overlap ratio of resolution bin
-        * background overlap ratio of resolution bin
-        * foreground/background overlap ratio of resolution bin
-        * background/foreground overlap ratio of resolution bin
+    This file contains the columns (in order):
+    * average resolution of resolution bin
+    * total overlap (considering foreground/background overlap) ratio of resolution bin
+    * total overlap (considering background/foreground overlap) ratio of resolution bin
+    * foreground overlap ratio of resolution bin
+    * background overlap ratio of resolution bin
+    * foreground/background overlap ratio of resolution bin
+    * background/foreground overlap ratio of resolution bin
 
 Labelling of the dataset
 ^^^^^^^^^^^^^^^^^^^^^^^^
@@ -231,23 +232,23 @@ The contents of these files are described in `Running multiple datasets at once`
 
 If one wants to only get the label file for one of the possible classifications, one can run the folowing programs:
 
-    1. **Label for overlaps per pixel**
+1. **Label for overlaps per pixel**
 
-        .. code-block:: bash
+    .. code-block:: bash
 
-            classify_overlaps --pixel_count
+        classify_overlaps --pixel_count
 
-    2. **Label for overlaps per reflection**
+2. **Label for overlaps per reflection**
 
-        .. code-block:: bash
+    .. code-block:: bash
 
-            classify_overlaps
+        classify_overlaps
 
-    3. **Label for sigma values**
+3. **Label for sigma values**
 
-        .. code-block:: bash
+    .. code-block:: bash
 
-            classify_sigma
+        classify_sigma
 
 Plotting of results
 -------------------
