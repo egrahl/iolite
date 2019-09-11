@@ -46,14 +46,14 @@ In order to run iolite for multiple datasets, one should create a new directory,
 
 .. code-block:: bash
 
-    mkdir new_directory
-    cd new_directory
+    mkdir NEW_DIRECTORY
+    cd NEW_DIRECTORY
 
 From this directory one can run iolite_preparation with up to 2 input directories that contain the raw datasets:
 
 .. code-block:: bash
 
-    iolite_preparation --input1=/path/to/first/input/directory --input2=/path/to/second/input/directory
+    iolite_preparation --input1=/PATH/TO/FIRST/INPUT/DIRECTORY --input2=/PATH/TO/SECOND/INPUT/DIRECTORY
 
 iolite_preparation will run all necessary modules for each dataset in the input directories so that they can then be classified.
 The classification of the datasets can be done by running label_dataset:
@@ -158,6 +158,7 @@ Overlapping spots
 *overlapping_spots* requires preprocessing with xia2. For that type:
 
 .. code-block:: bash
+
     xia2 image=/PATH/TO/FIRST/IMAGE:1:[number of images of the first sweep] dials.integrate.phil_file=/dls/science/users/gwx73773/iolite/share/integrate_params.phil
 
 Once the processing with xia2 was successful, it should be possible to change to the directory */DEFAULT/NATIVE/SWEEP1/integrate*. In there one should find the files
@@ -172,7 +173,34 @@ These files are the input files for *extract*. To run *extract* type:
 Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run in: 
 
 1. **overlaps per pixel**
-    The program 
+    The program can calculate the ratios of overlaps per pixel for the whole dataset and for resolution bins.
+    It needs to be run with dials.python:
+
+    .. code-block:: bash
+
+        dials.python /PATH/TO/IOLITE/iolite/src/iolite/overlaps/overlapping spots.py --run_pixel
+
+    This will write two output files: 
+        1. **overlap_total_pixel.txt**
+            This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
+        2. **overlap_lists_pixel.txt**
+            This file contains the columns (in order):
+            * average resolution of resolution bin
+            * total overlap ratio of resolution bin
+            * foreground overlap ratio of resolution bin
+            * background overlap ratio of resolution bin
+            * foreground/background overlap ratio of resolution bin
+
+2. **overlaps per reflection**
+    The program can calculate the ratios of overlaps per reflection for the whole dataset and for resolution bins.
+    It needs to be run with dials.python:
+
+    .. code-block:: bash
+
+        dials.python /PATH/TO/IOLITE/iolite/src/iolite/overlaps/overlapping spots.py 
+
+    This will write two output files:
+     
 
 API documentation
 -----------------
