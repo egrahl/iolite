@@ -120,21 +120,39 @@ The program requires dials. Therefore, one should run:
 
     module load dials/latest
 
-Now one can run the preparation modules. 
+Now one can run the preparation modules in a directory that will contain the output data.
 
 Ice-rings
 ^^^^^^^^^
-In order to classify a dataset whether it has ice-rings or not, the data needs to be imported from the source directory with dials.
+In order to classify a dataset whether it has ice-rings or not, the data needs to be imported from the source directory with dials. 
+
 
 .. code-block:: bash
 
-    dials.import *
+    dials.import /PATH/TO/IMAGES/*
+
+This should write an output file *imported.expt*. The next step is to find the strong spots on the images, for that run:
+
+.. code-block:: bash
+    dials.find_spots integrated.expt nproc=4
+
+This will write a file *strong.refl* into your working directory and will contain the reflection table.
+
+With that you can now run radial_average_bg.py. 
+.. warning::
+    The program can only run successfully if you use dials.python!
+
+.. code-block:: bash
+
+    dials.python /PATH/TO/IOLTE/iolite/src/iolite/ice_ring/radial_average_bg.py imported.expt
+
+The documenation of radial_average_bg can be found here:
+
+radial_average_bg will write an outputfile called table.txt, which contains the resolution data in the first column and the 
+intensity data in the second.
+One can now run ice-rings, which writes an output file *label_ice_rings.txt* that contains the labels already described in `Running multiple datasets at once`_
 
 
-Documentation of ice_rings
-
-.. currentmodule:: ice_rings
-.. autoclass:: IceRingClassifier
 
 API documentation
 -----------------
