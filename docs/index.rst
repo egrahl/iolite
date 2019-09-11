@@ -147,13 +147,32 @@ With that you can now run radial_average_bg.py.
 
     dials.python /PATH/TO/IOLTE/iolite/src/iolite/ice_ring/radial_average_bg.py imported.expt
 
-The documenation of radial_average_bg can be found here:
+The documenation of *radial_average_bg* can be found here:
 
-radial_average_bg will write an outputfile called table.txt, which contains the resolution data in the first column and the 
+*radial_average_bg* will write an outputfile called table.txt, which contains the resolution data in the first column and the 
 intensity data in the second.
-One can now run ice-rings, which writes an output file *label_ice_rings.txt* that contains the labels already described in `Running multiple datasets at once`_
+One can now run *ice-rings*, which writes an output file *label_ice_rings.txt* that contains the labels already described in `Running multiple datasets at once`_
 
+Overlapping spots
+^^^^^^^^^^^^^^^^^
+*overlapping_spots* requires preprocessing with xia2. For that type:
 
+.. code-block:: bash
+    xia2 image=/PATH/TO/FIRST/IMAGE:1:[number of images of the first sweep] dials.integrate.phil_file=/dls/science/users/gwx73773/iolite/share/integrate_params.phil
+
+Once the processing with xia2 was successful, it should be possible to change to the directory */DEFAULT/NATIVE/SWEEP1/integrate*. In there one should find the files
+*13_integrated.expt* and *13_integrated.pickle*
+These files are the input files for *extract*. To run *extract* type:
+
+.. code-block:: bash
+
+    dials.python /PATH/TO/IOLTE/iolite/src/iolite/overlaps/extract.py 13_integrated.expt 13_integrated.refl
+
+*extract* should write one pickle file per image, containing the reflection table of each image, e.g. *shoeboxes_0.pickle*
+Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run in: 
+
+1. **overlaps per pixel**
+    The program 
 
 API documentation
 -----------------
