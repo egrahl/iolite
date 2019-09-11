@@ -185,6 +185,7 @@ Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run
             This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
         2. **overlap_lists_pixel.txt**
             This file contains the columns (in order):
+
             * average resolution of resolution bin
             * total overlap ratio of resolution bin
             * foreground overlap ratio of resolution bin
@@ -205,6 +206,7 @@ Now one can run *overlapping_spots*. *overlapping_spots* has to modes it can run
     This file contains the total overlap ratio, the foreground overlap ratio, the background overlap ratio and the background/foreground overlap ratio
     2. **overlap_lists_shoebox.txt**
     This file contains the columns (in order):
+    
     * average resolution of resolution bin
     * total overlap (considering foreground/background overlap) ratio of resolution bin
     * total overlap (considering background/foreground overlap) ratio of resolution bin
