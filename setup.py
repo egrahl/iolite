@@ -22,9 +22,17 @@ def main():
             "bin/label_dataset",
             "bin/plot_results_overlaps",
             "bin/sigma_values",
-            "bin/iolite_preparation"
+            "bin/iolite_preparation",
         ],
-        install_requires=[],
+        install_requires=[
+            "matplotlib",
+            "numpy",
+            "scipy",
+            "argparse",
+            "pytest",
+            "PrettyTable",
+
+        ],
         setup_requires=["pytest-runner"],
         tests_require=["pytest", "pytest-cov", "mock"],
         test_suite="tests",
