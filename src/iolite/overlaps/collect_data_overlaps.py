@@ -113,14 +113,14 @@ def main(inputfile):
     """This is the main function of collect_data_overlaps.
 
     :param bool inputfile: boolean that decides if the pdb_ids should be
-                           read from a txt file (default:False)
+                           read from a txt file (default:True)
     """
     #select source of list of pdb_ids
     if inputfile:
-        pdb_id_list=write_pdb_id_l_directory()
-    else:
         infile = input("give inputfile: ")
         pdb_id_list = list_from_txt(infile)
+    else:
+        pdb_id_list=write_pdb_id_l_directory()
 
     #collect overlap data and write to file (shoebox and pixel)
     put_data_overlap_in_file(pdb_id_list,"overlap_total_shoebox.txt","count_overlaps_shoebox.txt")
@@ -133,13 +133,13 @@ def run():
     parser = argparse.ArgumentParser(description="command line argument")
 
     parser.add_argument(
-        "--inputfile",
+        "--no_inputfile",
         dest="inputfile",
         help="Enables the reading of the pdb ids from the directory",
         action="store_false",
     )
     parser.add_argument(
-        "--no_inputfile",
+        "--inputfile",
         dest="inputfile",
         type=bool,
         help="Enables the reading of the pdb ids from txt file",
