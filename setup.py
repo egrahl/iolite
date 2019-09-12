@@ -12,7 +12,7 @@ def main():
                    "src/iolite/command_line",
                    "src/iolite/ice_ring",
                    "src/iolite/overlaps",
-                   "src/iolite/sigma_values"],
+                   "src/iolite/sigma"],
         scripts=[
             "bin/radial_average_bg",
             "bin/ice_rings",
