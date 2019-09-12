@@ -1,4 +1,5 @@
-"""The program collect_data_overlaps can combine the data of 
+"""
+The program collect_data_overlaps can combine the data of 
 overlapping_spots.py from several datasets. These datasets are
 either given in a txt file or the program will look through
 all the dataset directories in the current working directory.
