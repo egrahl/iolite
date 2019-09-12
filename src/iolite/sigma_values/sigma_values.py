@@ -1,6 +1,5 @@
 """sigma_values.py collects the sigma values from a text file,
-plots them as histograms and boxplots and calulates the boundaries
-for the classification of other datasets. Additionally, it contains 
+plots them as histograms and boxplots. Additionally, it contains 
 a function that collects the sigma values from the dials.integrate.log
 files of several datasets.
 
@@ -132,21 +131,6 @@ def plot_boxplot(sigma, label):
     plt.show()
 
 
-def boundary_values(sigma_list):
-    """
-    This function calculates the boundary values for the classification 
-    based on a list of refernece sigma values.
-
-    :param list sigma_list: list of reference sigma_values
-
-    :returns: list of boundary values for classification
-    """
-    low = np.percentile(sigma_list, 20)
-    medium = np.percentile(sigma_list, 80)
-
-    boundaries = [low, medium]
-    return boundaries
-
 
 def write_boundaries_to_txt(filename, sigma_b_boundaries, sigma_m_boundaries):
     """
@@ -172,10 +156,7 @@ def main(no_bins):
     sigma_b, sigma_m = read_sigma_from_txt(
         "/dls/science/users/gwx73773/iolite/share/sigma_values.txt"
     )
-    #calculate boundary values
-    sigma_b_boundaries = boundary_values(sigma_b)
-    sigma_m_boundaries = boundary_values(sigma_m)
-    #write_boundaries_to_txt("/dls/science/users/gwx73773/iolite/share/sigma_boundaries.txt",sigma_b_boundaries,sigma_m_boundaries)
+   
 
     # plot histograms
     plot_histogram(sigma_b,no_bins,r'$\sigma_b$')

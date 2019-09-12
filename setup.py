@@ -23,6 +23,7 @@ def main():
             "bin/plot_results_overlaps",
             "bin/sigma_values",
             "bin/iolite_preparation",
+            "bin/collect_data_overlaps"
         ],
         install_requires=[
             "matplotlib",
