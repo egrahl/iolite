@@ -107,8 +107,7 @@ This will write a file *strong.refl* into your working directory and will contai
 
 With that you can now run radial_average_bg.py. 
 
-.. warning::
-    The program can only run successfully if you use dials.python!
+.. warning:: The program can only run successfully if you use dials.python!
 
 .. code-block:: bash
 
