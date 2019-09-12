@@ -71,7 +71,7 @@ class OverlapClassifier:
 
         :param str filename: nameof file containing the lists
 
-        :returns: lists for total, bg, fg and bg_fg overlaps
+        :return: lists for total, bg, fg and bg_fg overlaps
         """
         
         filein = open(filename, "r")
@@ -95,7 +95,7 @@ class OverlapClassifier:
         """This function reads the overlap values of the dataset
         that needs to be classified.
 
-        :returns: total, fg, bg and bg_fg overlap values
+        :return: total, fg, bg and bg_fg overlap values
         """
         
         filein=open(filename,"r")
