@@ -278,8 +278,76 @@ Plots from ice_ring
    :align: center
 
 
+Plots from overlaps
+^^^^^^^^^^^^^^^^^^^
+1. **Plot overlap distribution for one dataset**
+    You can plot the different kinds of overlaps against resolution bins with the following commands in the highest level of the dataset directory:
+    
+    1. per pixel
+
+    .. code-block:: bash
+
+        plot_results_overlaps 
+
+    2. per reflection
+
+    .. code-block:: bash
+
+        plot_results_overlaps --shoebox
+
+2. **Plot overlap distribution for multiple datasets**
+    In order to plot the overlap data, it is necessary to collect it from every dataset. This can be done by running *collect_data_overlaps*. If you have a text file
+    of pdb_ids in a column, you can collect the data from only these datasets by running:
 
 
+    .. code-block:: bash
+
+        collect_data_overlaps 
+
+    It will then prompt for the input file containing the pdb ids.
+
+    If you want to collect the data from all datasets in your directory, run:
+
+    .. code-block:: bash
+
+        collect_data_overlaps --no_inputfile
+
+    The program will write two output files:
+
+        1. *count_overlaps_pixel.txt*
+        2. *count_overlaps_shoebox.txt*
+
+    Both files will contain the following columns (in order):
+
+        * PDB id
+        * total overlap ratio
+        * foreground overlap ratio
+        * background overlap ratio
+        * background/foreground overlap ratio
+
+    Once these files are in the directory one can plot the histograms and boxplots of the distribution of overlaps for the datasets.
+    If you want to plot the results for overlaps per pixel, type:
+
+    .. code-block:: bash
+
+        plot_results_overlaps --multiple
+
+    If you want to plot the results for overlaps per reflection, type:
+
+    .. code-block:: bash
+
+        plot_results_overlaps --multiple --shoebox
+
+
+Plots from sigma_values
+^^^^^^^^^^^^^^^^^^^^^^^
+It is possible to plot the distribution of the sigma-values the classification is based on as histograms and boxplots. The list of these sigma values can 
+be found in the share directory of *iolite* as *sigma_values.txt*. It is possible to set the number of bins for the histogram with the 
+command line argument --num_bins (default: 50). A possible command for plotting would be:
+
+.. code-block:: bash
+
+    sigma_values --num_bins=70
 
 
 
