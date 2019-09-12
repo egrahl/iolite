@@ -4,4 +4,4 @@ import sys
 from src.iolite import iolite_preparation
 
 if __name__ == '__main__':
-    iolite_preparation.run(sys.argv[1:])
+    iolite_preparation.run()
