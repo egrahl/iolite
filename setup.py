@@ -14,7 +14,6 @@ def main():
                    "src/iolite/overlaps",
                    "src/iolite/sigma"],
         scripts=[
-            "bin/radial_average_bg",
             "bin/ice_rings",
             "bin/classify_sigma",
             "bin/classify_overlaps",
