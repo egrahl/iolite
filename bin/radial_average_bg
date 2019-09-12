@@ -1,7 +1,0 @@
-#!/bin/env/python3
-
-import sys
-from src.iolite.ice_ring import radial_average_bg
-
-if __name__ == '__main__':
-    radial_average_bg(sys.argv[1:])
