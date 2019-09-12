@@ -4,4 +4,4 @@ import sys
 from src.iolite.classification import classify_overlaps
 
 if __name__ == '__main__':
-    classify_overlaps.run(sys.argv[1:])
+    classify_overlaps.run()

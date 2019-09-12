@@ -4,6 +4,6 @@ import sys
 from src.iolite.ice_ring import ice_rings
 
 if __name__ == '__main__':
-    ice_rings.run(sys.argv[1:])
+    ice_rings.run()
             
    

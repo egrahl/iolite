@@ -4,4 +4,4 @@ import sys
 from src.iolite.overlaps import plot_results_overlaps
 
 if __name__ == '__main__':
-    plot_results_overlaps.run(sys.argv[1:])
+    plot_results_overlaps.run()

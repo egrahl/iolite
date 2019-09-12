@@ -4,4 +4,4 @@ import sys
 from src.iolite import label_dataset
 
 if __name__ == '__main__':
-    label_dataset.run(sys.argv[1:])
+    label_dataset.run()

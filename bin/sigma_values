@@ -4,6 +4,6 @@ import sys
 from src.iolite.sigma import sigma_values
 
 if __name__ == '__main__':
-    sigma_values.run(sys.argv[1:])
+    sigma_values.run()
             
    

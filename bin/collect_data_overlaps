@@ -4,6 +4,6 @@ import sys
 from src.iolite.overlaps import collect_data_overlaps
 
 if __name__ == '__main__':
-    collect_data_overlaps.run(sys.argv[1:])
+    collect_data_overlaps.run()
             
    
