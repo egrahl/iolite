@@ -5,7 +5,7 @@
 
 iolite
 ==================================
-This software package can be used to classify X-ray diffraction datasets of macro-molecular crystallography
+This python package can be used to classify X-ray diffraction datasets of macro-molecular crystallography
 with regards to the existence of ice-rings, overlapping spots and mosaicity.
 
 
@@ -24,6 +24,13 @@ To install from source, clone the `GitHub <https://github.com/egrahl/iolite/>`_ 
 
     python setup.py install
 
+To use *iolite* for developing, run the following in the directory containing the setup.py:
+
+.. code-block:: bash
+
+    python setup.py develop --user
+    export PATH=$PATH:~/.local/bin
+
 Testing
 -------
 
@@ -33,7 +40,10 @@ To run the tests, download the source code and do the following:
 
     python setup.py test
 
+How to use
+----------
 
+A tutorial explaining how to use *iolite* can be found under */docs/iolite_tutorial.rst* . 
 
 
 

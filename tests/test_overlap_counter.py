@@ -1,5 +1,5 @@
 import pytest
-from iolite.overlaps.overlapping_spots import OverlapCounter
+from src.iolite.overlaps.overlapping_spots import OverlapCounter
 import random
 import numpy as np
 
