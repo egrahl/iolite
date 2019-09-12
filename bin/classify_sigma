@@ -1,7 +1,7 @@
 #!/bin/env/python3
 
 import sys
-from iolite.classification import classify_sigma
+from src.iolite.classification import classify_sigma
 
 if __name__ == '__main__':
     classify_sigma.run(sys.argv[1:])
