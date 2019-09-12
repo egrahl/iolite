@@ -236,21 +236,21 @@ If one wants to only get the label file for one of the possible classifications,
 
 1. **Label for overlaps per pixel**
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        classify_overlaps --pixel_count
+    classify_overlaps --pixel_count
 
 2. **Label for overlaps per reflection**
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        classify_overlaps
+    classify_overlaps
 
 3. **Label for sigma values**
 
-    .. code-block:: bash
+.. code-block:: bash
 
-        classify_sigma
+    classify_sigma
 
 Plotting of results
 -------------------
@@ -314,16 +314,16 @@ Plots from overlaps
 
     The program will write two output files:
 
-        1. *count_overlaps_pixel.txt*
-        2. *count_overlaps_shoebox.txt*
+    1. *count_overlaps_pixel.txt*
+    2. *count_overlaps_shoebox.txt*
 
     Both files will contain the following columns (in order):
 
-        * PDB id
-        * total overlap ratio
-        * foreground overlap ratio
-        * background overlap ratio
-        * background/foreground overlap ratio
+    * PDB id
+    * total overlap ratio
+    * foreground overlap ratio
+    * background overlap ratio
+    * background/foreground overlap ratio
 
     Once these files are in the directory one can plot the histograms and boxplots of the distribution of overlaps for the datasets.
     If you want to plot the results for overlaps per pixel, type:
