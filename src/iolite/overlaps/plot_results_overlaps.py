@@ -84,22 +84,6 @@ def read_lists_total(filename):
     return total, fg, bg, bg_fg
 
 
-def border_values(overlap_list):
-    """
-    This function calculates the border values of the overlaps
-    for the classification.
-
-    :param list overlap_list: the list containing the overlap data
-
-    :returns: list containing the border values
-    """
-    low = np.percentile(overlap_list, 25)
-    medium = np.percentile(overlap_list, 75)
-    high = medium + 1.5 * (medium - low)
-
-    borders = [low, medium, high]
-    return borders
-
 
 def read_lists_resolution(overlap_kind):
     """
@@ -124,11 +108,8 @@ def read_lists_resolution(overlap_kind):
 
     #read data for overlaps per pixel
     if overlap_kind:
-        inputfile = "overlap_lists.txt"
-        for file in os.listdir(path):
-            #get old version of txt filename
-            if file == "overlap_lists_corrected.txt":
-                inputfile = file
+        inputfile = "DEFAULT/NATIVE/SWEEP1/integrate/overlap_lists_pixel.txt"
+        
         #read in overlap data from the txt file
         for line in open(inputfile).readlines():
             r, t, f, b, bf = map(float, line.split(","))
@@ -141,7 +122,7 @@ def read_lists_resolution(overlap_kind):
         fg_bg = bg_fg
     #read data for overlaps per reflection/shoebox
     else:
-        inputfile = "overlap_lists_shoebox.txt"
+        inputfile = "DEFAULT/NATIVE/SWEEP1/integrate/overlap_lists_shoebox.txt"
         #read in overlap data from the txt file
         for line in open(inputfile).readlines():
             r, tf, tb, f, b, fb, bf = map(float, line.split(","))
