@@ -105,7 +105,7 @@ This should write an output file *imported.expt*. The next step is to find the s
 
 This will write a file *strong.refl* into your working directory and will contain the reflection table.
 
-With that you can now run radial_average_bg.py. 
+With that you can now run *radial_average_bg*. 
 
 .. warning:: The program can only run successfully if you use dials.python!
 
@@ -113,7 +113,6 @@ With that you can now run radial_average_bg.py.
 
     dials.python /PATH/TO/IOLTE/iolite/src/iolite/ice_ring/radial_average_bg.py imported.expt
 
-The documenation of *radial_average_bg* can be found here:
 
 *radial_average_bg* will write an outputfile called table.txt, which contains the resolution data in the first column and the 
 intensity data in the second.
